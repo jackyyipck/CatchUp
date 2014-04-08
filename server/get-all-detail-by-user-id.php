@@ -17,6 +17,7 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	$event_node->addChild('event_name',$event_list_query_row['event_name']);
 	$event_node->addChild('event_desc',$event_list_query_row['event_desc']);
 	$event_node->addAttribute('event_create_at',$event_list_query_row['event_create_at']);
+	$event_node->addAttribute('event_start_at',$event_list_query_row['event_start_at']);
 	$event_node->addAttribute('event_expire_at',$event_list_query_row['event_expire_at']);
 	
 	//******<invitor>*********

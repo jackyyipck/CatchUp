@@ -9,6 +9,7 @@ $_POST["user_id"][] = $_POST["create_by"];
 $event_id = create_event_detail($_SESSION["db_conn"], 
 					$_POST["event_name"],
 					$_POST["event_desc"],
+					$_POST["start_at"],
 					$_POST["expire_at"],
 					$_POST["create_by"],
 					$_POST["option_name"],

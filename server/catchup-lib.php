@@ -16,13 +16,14 @@ function init_db()
 function create_event_detail($db_conn, 
 							$event_name, 
 							$event_desc, 
+							$start_at,
 							$expire_at, 
 							$create_by, 
 							$arr_option_name, 
 							$arr_option_desc, 
 							$arr_user_id)
 {
-	$event_id = create_event($db_conn, $event_name, $event_desc, $expire_at, $create_by);
+	$event_id = create_event($db_conn, $event_name, $event_desc, $start_at, $expire_at, $create_by);
 	if ($event_id > 0)
 	{
 		for($i = 0; $i<count($arr_option_name); $i++)
@@ -65,10 +66,10 @@ function remove_event_user_pair($db_conn, $event_id, $user_id)
 {
 	return mysql_query(remove_event_option_pair_sql($event_id, $user_id), $db_conn);	
 }
-function create_event($db_conn, $event_name, $event_desc, $expire_at, $create_by)
+function create_event($db_conn, $event_name, $event_desc, $start_at, $expire_at, $create_by)
 {
 	$event_id = 0;
-	if (mysql_query(create_event_sql($event_name, $event_desc, $expire_at, $create_by), $db_conn))
+	if (mysql_query(create_event_sql($event_name, $event_desc, $start_at, $expire_at, $create_by), $db_conn))
 	{
 		$event_id = mysql_insert_id($db_conn);
 	}
@@ -134,7 +135,7 @@ function is_valid_file_upload($file_object)
 		return false;
 	}
 }
-function create_verify_code($db_conn, $user_mobile)
+function create_verify_code($db_conn, $user_mobile, $device_id)
 {
 	$user_id = 0;
 	$verification_code = rand(100000,999999);
@@ -142,14 +143,14 @@ function create_verify_code($db_conn, $user_mobile)
 	$exist_user_query_row = mysql_fetch_assoc($exist_user_query_result);
 	if (mysql_num_rows($exist_user_query_result) == 0)
 	{
-		if (mysql_query(create_verify_code_sql($user_mobile, $verification_code), $db_conn))
+		if (mysql_query(create_verify_code_sql($user_mobile, $verification_code, $device_id), $db_conn))
 		{
 			$user_id = mysql_insert_id($db_conn);
 		}
 		return array($user_id, $verification_code);
 	} else {
 		$user_id = $exist_user_query_row['user_id'];
-		mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code), $db_conn);
+		mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code, $device_id), $db_conn);
 		return array($user_id, $verification_code);
 	}
 }
@@ -215,6 +216,18 @@ function get_verify_code($db_conn, $user_mobile)
 	if (mysql_num_rows($verify_code_query_result) <> 0)
 	{
 		$return_result = $verify_code_query_row['verification_code'];
+	} else {
+		$return_result = 0;
+	}
+	return $return_result;
+}
+function get_device_id($db_conn, $user_id)
+{
+	$device_id_query_result = mysql_query(get_device_id_sql($user_id), $db_conn);
+	$device_id_query_row = mysql_fetch_assoc($device_id_query_result);
+	if (mysql_num_rows($device_id_query_result) <> 0)
+	{
+		$return_result = $device_id_query_row['device_id'];
 	} else {
 		$return_result = 0;
 	}

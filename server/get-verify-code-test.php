@@ -3,7 +3,7 @@
 	<input type="hidden" name="action" value="get-verify-code"/>
 	<table>		
 		<tr>
-			<td>Mobile:</td>
+			<td>User Mobile:</td>
 			<td><input type="text" name="user_mobile"/></td>
 		</tr>		
 		<tr>

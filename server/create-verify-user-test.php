@@ -7,6 +7,10 @@
 			<td><input type="text" name="user_mobile"/></td>
 		</tr>		
 		<tr>
+			<td>Device ID:</td>
+			<td><input type="text" name="device_id"/></td>
+		</tr>			
+		<tr>
 			<td><input type="submit" value="Submit"></td>
 			<td></td>
 		</tr>

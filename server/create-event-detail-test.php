@@ -11,7 +11,12 @@
 		<tr>
 			<td>Create by:</td>
 			<td><input type="text" name="create_by"/></td>
-		</tr>		
+		</tr>	
+		<tr>
+			<td>Start at:</td>
+			<td><input type="text" name="start_at" value="2012-10-26 09:27:26"/></td>
+		</tr>
+		<tr>			
 		<tr>
 			<td>Expire at:</td>
 			<td><input type="text" name="expire_at" value="2013-10-26 09:27:26"/></td>
