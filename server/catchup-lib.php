@@ -42,6 +42,98 @@ function create_event_detail($db_conn,
 	}
 	return $event_id;
 }
+function create_or_update_event_detail($db_conn, 
+							$event_id,
+							$event_name, 
+							$event_desc, 
+							$start_at,
+							$expire_at, 
+							$create_by, 
+							$arr_option_id,
+							$arr_option_name, 
+							$arr_option_desc, 
+							$arr_invitee_id)
+{
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $start_at, $expire_at, $create_by), $db_conn))
+	{
+		if($event_id=='')
+		{
+			$event_id = mysql_insert_id($db_conn);
+		}
+	}
+	echo $event_id;
+	if ($event_id > 0)
+	{
+		for($i = 0; $i<count($arr_option_id); $i++)
+		{
+			//loop through all options
+			// - Delete if option_name/option_desc is empty
+			// - Create/Update otherwise
+			echo create_or_update_option_sql($event_id, $arr_option_id[$i], $arr_option_name[$i], $arr_option_desc[$i]);
+			if(!mysql_query(create_or_update_option_sql($event_id, $arr_option_id[$i], $arr_option_name[$i], $arr_option_desc[$i]), $db_conn)){
+				mysql_error();
+			}
+		}
+		mysql_query(remove_invitee_sql($event_id));
+		for($i = 0; $i<count($arr_invitee_id); $i++)
+		{		
+			//remove all invitee, and add back based on latest list of invitees
+			if($arr_invitee_id[$i] != ''){
+				echo create_event_user_pair_sql($db_conn, $event_id, $arr_invitee_id[$i]);
+				mysql_query(create_event_user_pair_sql($db_conn, $event_id, $arr_invitee_id[$i]), $db_conn);
+			}
+		}
+	}
+	return $event_id;
+}
+
+function get_event_detail($db_conn, $event_id)
+{
+
+	$event_sql = get_event_by_event_id_sql($event_id);
+	$event_query_result = mysql_query($event_sql);
+	$result = '';
+	
+	if($event_query_row = mysql_fetch_assoc($event_query_result)) 
+	{
+		$result['event']['event_id'] = $event_query_row['event_id'];
+		$result['event']['event_name'] = $event_query_row['event_name'];
+		$result['event']['event_desc'] = $event_query_row['event_desc'];
+		$result['event']['event_create_at'] = $event_query_row['event_create_at'];
+		$result['event']['event_start_at'] = $event_query_row['event_start_at'];
+		$result['event']['event_expire_at'] = $event_query_row['event_expire_at'];
+		$result['event']['event_create_by'] = $event_query_row['event_create_by'];
+	}
+	mysql_free_result($event_query_result);
+	
+	//******<invitees>*********	
+	$user_sql = get_user_sql($event_id);
+	$user_list_query_result = mysql_query($user_sql);
+	$result['invitees_num'] = mysql_num_rows($user_list_query_result);	
+	
+	for($i=0; $user_list_query_row = mysql_fetch_assoc($user_list_query_result); $i++)  
+	{		
+		$result['invitee'][$i]['user_name'] = $user_list_query_row['user_name'];
+		$result['invitee'][$i]['user_id'] = $user_list_query_row['user_id'];
+	}
+	mysql_free_result($user_list_query_result);
+	
+	//******<options>*********
+	$option_sql = get_option_sql($event_id);
+	$option_list_query_result = mysql_query($option_sql);
+	$result['options_num'] = mysql_num_rows($option_list_query_result);	
+	
+	for($i=0; $options_query_row = mysql_fetch_assoc($option_list_query_result); $i++) 
+	{
+		$result['option'][$i]['option_id'] = $options_query_row['option_id'];
+		$result['option'][$i]['option_name'] = $options_query_row['option_name'];
+		$result['option'][$i]['option_desc'] = $options_query_row['option_desc'];			
+	}
+	mysql_free_result($option_list_query_result);
+
+	return $result;
+}
+
 function create_event_option_pair($db_conn, $event_id, $option_id)
 {
 	return mysql_query(create_event_option_pair_sql($event_id, $option_id), $db_conn);	

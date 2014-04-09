@@ -95,6 +95,15 @@ function get_event_sql($p_user_id)
 			AND tbl_event_user.user_id = '.$p_user_id;
 	return $sql;
 }
+function get_event_by_event_id_sql($p_event_id)
+{
+	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by
+			FROM tbl_event
+			WHERE 1=1
+			AND event_id = '.$p_event_id;
+	return $sql;
+}
+
 function get_user_vote_sql($p_option_id)
 {
 	$sql = 'SELECT tbl_user.user_id, user_name, create_at
@@ -118,6 +127,29 @@ function create_event_sql($event_name, $event_desc, $start_at, $expire_at, $crea
 			)";
 	return $sql;		
 }
+function create_or_update_event_sql($event_id, $event_name, $event_desc, $start_at, $expire_at, $create_by)
+{
+	$sql = "INSERT INTO tbl_event 
+			(event_id, event_name, event_desc, event_start_at, event_expire_at, event_create_by) 
+			VALUES 
+			(
+				'".$event_id."',
+				'".$event_name."', 
+				'".$event_desc."',
+				'".$start_at."', 
+				'".$expire_at."', 
+				'".$create_by."'
+			)
+			ON DUPLICATE KEY UPDATE
+			event_id = VALUES(event_id), 
+			event_name = VALUES(event_name), 
+			event_desc = VALUES(event_desc), 
+			event_start_at = VALUES(event_start_at), 
+			event_expire_at = VALUES(event_expire_at), 
+			event_create_by = VALUES(event_create_by)			
+			";
+	return $sql;		
+}
 function remove_event_sql($event_id)
 {
 	$sql = "DELETE tbl_event WHERE event_id = ".$event_id;
@@ -134,6 +166,41 @@ function create_option_sql($option_name, $option_desc)
 			)";
 	return $sql;		
 }
+function create_or_update_option_sql($event_id, $option_id, $option_name, $option_desc)
+{
+	//If option name and desc are empty, delete the option id
+	if(isset($opiont_id) && $option_name == '' && $option_desc == ''){
+		$sql = "DELETE tbl_option WHERE option_id = '".$option_id."';";
+		$sql .= "DELETE tbl_event_option WHERE option_id = '".$option_id."';";
+	}else{
+		$sql = "INSERT INTO tbl_option 
+				(option_id, option_name, option_desc) 
+				VALUES 
+				(
+					'".$option_id."', 
+					'".$option_name."', 
+					'".$option_desc."'
+				)
+				ON DUPLICATE KEY UPDATE
+				option_id = VALUES(option_id), 
+				option_name = VALUES(option_name),
+				option_desc = VALUES(option_desc),
+				option_id=LAST_INSERT_ID(option_id);";
+		$sql .= "INSERT INTO tbl_event_option 
+				(event_id, option_id) 
+				VALUES 
+				(
+					'".$event_id."', 
+					(SELECT LAST_INSERT_ID(option_id) FROM tbl_option)
+				)
+				ON DUPLICATE KEY UPDATE
+				event_id = VALUES(event_id), 
+				option_id = VALUES(option_id)
+				";
+	}
+	return $sql;		
+}
+
 function remove_option_sql($option_id)
 {
 	$sql = "DELETE tbl_option WHERE option_id = ".$option_id;
@@ -169,6 +236,11 @@ function create_event_user_pair_sql($event_id, $user_id)
 function remove_event_user_pair_sql($event_id, $user_id)
 {
 	$sql = "DELETE tbl_event_user WHERE event_id = ".$event_id." AND user_id = ".$user_id;
+	return $sql;
+}
+function remove_invitee_sql($event_id)
+{
+	$sql = "DELETE tbl_event_user WHERE event_id = ".$event_id;
 	return $sql;
 }
 function create_verify_code_sql($user_mobile, $verification_code, $device_id)

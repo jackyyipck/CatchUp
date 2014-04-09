@@ -36,12 +36,7 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	$user_list_query_result = mysql_query($user_sql);
 	$event_node->addChild('event_invitees',mysql_num_rows($user_list_query_result));	
 	
-	$distinct_respondent_sql = get_distinct_respondent_sql($event_list_query_row['event_id']);
-	$distinct_respondent_query_result = mysql_query($distinct_respondent_sql);
-	$event_node->addChild('event_respondents',mysql_num_rows($distinct_respondent_query_result));
-	
-	$invitee_node = $event_node->addChild('invitees');
-	while($user_list_query_row = mysql_fetch_assoc($user_list_query_result)) 
+	for($i=0; $user_list_query_row = mysql_fetch_assoc($user_list_query_result); $i++) 
 	{		
 		$invitee_name_node = $invitee_node->addChild('invitees_name', $user_list_query_row['user_name']);
 		$invitee_name_node->addAttribute('invitees_id', $user_list_query_row['user_id']);
