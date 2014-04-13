@@ -34,6 +34,6 @@ else
 {
 	
 }	*/				
-//header( 'Location: create-event-detail-test.php?event_id='.$_POST["event_id"].'') ;
+header( 'Location: create-event-detail-test.php?event_id='.$event_id.'') ;
 
 ?>

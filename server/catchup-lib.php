@@ -61,7 +61,6 @@ function create_or_update_event_detail($db_conn,
 			$event_id = mysql_insert_id($db_conn);
 		}
 	}
-	echo $event_id;
 	if ($event_id > 0)
 	{
 		for($i = 0; $i<count($arr_option_id); $i++)
@@ -69,18 +68,19 @@ function create_or_update_event_detail($db_conn,
 			//loop through all options
 			// - Delete if option_name/option_desc is empty
 			// - Create/Update otherwise
-			echo create_or_update_option_sql($event_id, $arr_option_id[$i], $arr_option_name[$i], $arr_option_desc[$i]);
-			if(!mysql_query(create_or_update_option_sql($event_id, $arr_option_id[$i], $arr_option_name[$i], $arr_option_desc[$i]), $db_conn)){
-				mysql_error();
+			if($arr_option_id[$i] == '' && $arr_option_name[$i] == ''){
+				continue;
 			}
+			$arr_sql = create_or_update_option_sql($event_id, $arr_option_id[$i], $arr_option_name[$i], $arr_option_desc[$i]);
+			mysql_query($arr_sql[0]);
+			mysql_query($arr_sql[1]);
 		}
 		mysql_query(remove_invitee_sql($event_id));
 		for($i = 0; $i<count($arr_invitee_id); $i++)
 		{		
 			//remove all invitee, and add back based on latest list of invitees
-			if($arr_invitee_id[$i] != ''){
-				echo create_event_user_pair_sql($db_conn, $event_id, $arr_invitee_id[$i]);
-				mysql_query(create_event_user_pair_sql($db_conn, $event_id, $arr_invitee_id[$i]), $db_conn);
+			if($arr_invitee_id[$i] != '' && $arr_invitee_id[$i] != 0){
+				mysql_query(create_event_user_pair_sql($event_id, $arr_invitee_id[$i]), $db_conn);
 			}
 		}
 	}

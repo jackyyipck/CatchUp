@@ -169,11 +169,11 @@ function create_option_sql($option_name, $option_desc)
 function create_or_update_option_sql($event_id, $option_id, $option_name, $option_desc)
 {
 	//If option name and desc are empty, delete the option id
-	if(isset($opiont_id) && $option_name == '' && $option_desc == ''){
-		$sql = "DELETE tbl_option WHERE option_id = '".$option_id."';";
-		$sql .= "DELETE tbl_event_option WHERE option_id = '".$option_id."';";
+	if($option_id != '' && $option_name == '' && $option_desc == ''){
+		$sql[0] = "DELETE FROM tbl_option WHERE option_id = '".$option_id."';";
+		$sql[1] = "DELETE FROM tbl_event_option WHERE option_id = '".$option_id."';";
 	}else{
-		$sql = "INSERT INTO tbl_option 
+		$sql[0] = "INSERT INTO tbl_option 
 				(option_id, option_name, option_desc) 
 				VALUES 
 				(
@@ -185,13 +185,13 @@ function create_or_update_option_sql($event_id, $option_id, $option_name, $optio
 				option_id = VALUES(option_id), 
 				option_name = VALUES(option_name),
 				option_desc = VALUES(option_desc),
-				option_id=LAST_INSERT_ID(option_id);";
-		$sql .= "INSERT INTO tbl_event_option 
+				option_id = LAST_INSERT_ID(option_id);";
+		$sql[1] = "INSERT INTO tbl_event_option 
 				(event_id, option_id) 
 				VALUES 
 				(
 					'".$event_id."', 
-					(SELECT LAST_INSERT_ID(option_id) FROM tbl_option)
+					LAST_INSERT_ID()
 				)
 				ON DUPLICATE KEY UPDATE
 				event_id = VALUES(event_id), 
