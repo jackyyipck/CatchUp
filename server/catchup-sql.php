@@ -240,7 +240,7 @@ function remove_event_user_pair_sql($event_id, $user_id)
 }
 function remove_invitee_sql($event_id)
 {
-	$sql = "DELETE tbl_event_user WHERE event_id = ".$event_id;
+	$sql = "DELETE FROM tbl_event_user WHERE event_id = ".$event_id;
 	return $sql;
 }
 function create_verify_code_sql($user_mobile, $verification_code, $device_id)

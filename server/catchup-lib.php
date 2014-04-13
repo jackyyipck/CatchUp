@@ -195,7 +195,7 @@ function remove_vote($db_conn, $user_id, $option_id)
 function reset_verify_code_and_state($db_conn, $user_id)
 {
 	$verification_code = rand(100000,999999);
-	mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code), $db_conn);
+	mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code, ""), $db_conn);
 	return array($user_id, $verification_code);
 }
 function enrich_user($db_conn, $user_id, $user_name, $user_avatar_filename, $user_email)

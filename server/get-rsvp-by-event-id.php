@@ -1,11 +1,9 @@
 <?php
 include 'catchup-lib.php';
 
-header("Content-Type: text/xml; charset=utf-8");
+init_db();
 
-mysql_connect('localhost', 'seayu_catchup', 'anios');
-mysql_select_db('seayu_catchup');
-mysql_set_charset('utf8');
+header("Content-Type: text/xml; charset=utf-8");
 
 //XML compilation*****************
 $response_node = new SimpleXMLElement('<response/>');

@@ -34,7 +34,7 @@ function test_get_comment()
 				
 	printStr("Created one test comment msg");
 	
-	$url = get_full_url("get-comment-by-event-id.php?event_id=99981");
+	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&user_id=000000");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
 										<comment comment_id="9901">
@@ -88,7 +88,7 @@ function test_create_and_verify_user()
 {
 	printStr("Creating and verifying accounts");
 	
-	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111");
+	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=000000");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$actual_user_id = (string) $actual->user_id;
 	$actual_verification_code = (string) $actual->to_be_removed->verification_code;
@@ -96,7 +96,7 @@ function test_create_and_verify_user()
 	{
 		myAssertPass($url);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=000000&verification_code=000000");
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=000000&verification_code=000000&device_id=000000");
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
 											<verification_status>0</verification_status>
@@ -104,7 +104,8 @@ function test_create_and_verify_user()
 										</response>');
 		myAssert($url, $actual, $expected);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=000000");
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=000000&device_id=000000");
+		echo $url;
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		if (((string) $actual->verification_status) == 0 && $actual->failure_reason == "Verification code does not match, status and code has been reset")
 		{
