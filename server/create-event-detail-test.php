@@ -169,3 +169,16 @@ if(isset($_GET['event_id']))
 <?php
 	}
 ?>
+
+<form action="create-event-detail.php" method="post">
+	<table>
+		<tr>
+			<td>Event ID:</td>
+			<td><input type="hidden" name="action" value="delete"/><input type="text" name="event_id"/></td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Submit"></td>
+			<td></td>
+		</tr>
+	</table>
+</form>

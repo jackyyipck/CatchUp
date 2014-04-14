@@ -166,6 +166,15 @@ function create_option_sql($option_name, $option_desc)
 			)";
 	return $sql;		
 }
+function delete_event_sql($event_id)
+{
+	$sql[] = "DELETE FROM tbl_option WHERE option_id IN (SELECT option_id FROM tbl_event_option WHERE event_id = '".$event_id."');";
+	$sql[] = "DELETE FROM tbl_option_user WHERE option_id IN (SELECT option_id FROM tbl_event_option WHERE event_id = '".$event_id."');";
+	$sql[] = "DELETE FROM tbl_event_user WHERE event_id = '".$event_id."';";
+	$sql[] = "DELETE FROM tbl_event_option WHERE event_id = '".$event_id."';";
+	$sql[] = "DELETE FROM tbl_event WHERE event_id = '".$event_id."';";
+	return $sql;
+}
 function create_or_update_option_sql($event_id, $option_id, $option_name, $option_desc)
 {
 	//If option name and desc are empty, delete the option id

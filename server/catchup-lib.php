@@ -42,6 +42,14 @@ function create_event_detail($db_conn,
 	}
 	return $event_id;
 }
+function delete_event_detail($db_conn, $event_id)
+{
+	$arr_sql = delete_event_sql($event_id);
+	for($i=0; $i<count($arr_sql); $i++)
+	{
+		mysql_query($arr_sql[$i]);
+	}
+}
 function create_or_update_event_detail($db_conn, 
 							$event_id,
 							$event_name, 
