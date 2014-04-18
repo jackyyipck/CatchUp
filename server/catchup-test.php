@@ -348,6 +348,7 @@ function test_empty_event()
 	$url = get_full_url("get-option-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
+										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
 										<option_name option_id="N" option_desc="" voters_num="1">Pending RSVP</option_name>
 									</response>');
 										
@@ -411,6 +412,7 @@ function test_multiple_invitee()
 	$url = get_full_url("get-option-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
+										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
 										<option_name option_id="N" option_desc="" voters_num="3">Pending RSVP</option_name>
 									</response>');
 										
@@ -481,6 +483,7 @@ function test_option()
 	$url = get_full_url("get-option-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
+										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
 										<option_name option_id="99881" option_desc="Option Desc 1" voters_num="0">Option 1</option_name>
 										<option_name option_id="99882" option_desc="Option Desc 2" voters_num="0">Option 2</option_name>
 										<option_name option_id="99883" option_desc="Option Desc 3" voters_num="0">Option 3</option_name>
@@ -547,6 +550,7 @@ function test_one_vote()
 	$url = get_full_url("get-option-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
+										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
 										<option_name option_id="99881" option_desc="Option Desc 1" voters_num="1">Option 1</option_name>
 										<option_name option_id="99882" option_desc="Option Desc 2" voters_num="0">Option 2</option_name>
 										<option_name option_id="99883" option_desc="Option Desc 3" voters_num="0">Option 3</option_name>
@@ -633,6 +637,7 @@ function test_vote_by_same_invitee()
 	$url = get_full_url("get-option-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
+										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
 										<option_name option_id="99881" option_desc="Option Desc 1" voters_num="1">Option 1</option_name>
 										<option_name option_id="99882" option_desc="Option Desc 2" voters_num="1">Option 2</option_name>
 										<option_name option_id="99883" option_desc="Option Desc 3" voters_num="0">Option 3</option_name>
@@ -707,6 +712,7 @@ function test_vote_by_multiple_invitee()
 	$url = get_full_url("get-option-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
+										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
 										<option_name option_id="99881" option_desc="Option Desc 1" voters_num="1">Option 1</option_name>
 										<option_name option_id="99882" option_desc="Option Desc 2" voters_num="2">Option 2</option_name>
 										<option_name option_id="99883" option_desc="Option Desc 3" voters_num="1">Option 3</option_name>
