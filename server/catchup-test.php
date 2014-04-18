@@ -42,9 +42,12 @@ function test_create_update_delete_event()
 	$url .= "option_id[]=&option_name[]=".$option_name1."&";
 	$url .= "option_id[]=&option_name[]=".$option_name2."&";
 	file_get_contents($url);
-	$event_id = mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event WHERE event_name = '".$event_name."'"))['event_id'];
-	$option_id1 = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name1."'"))['option_id'];
-	$option_id2 = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name2."'"))['option_id'];
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event WHERE event_name = '".$event_name."'"));
+	$event_id = $query_result['event_id'];
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name1."'"));
+	$option_id1 = $query_result['option_id'];
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name2."'"));
+	$option_id2 = $query_result['option_id'];
 	if($event_id != 0)
 	{
 		printStr("Creating event using form");
@@ -96,7 +99,8 @@ function test_create_update_delete_event()
 		$url .= "option_id[]=".$option_id2."&option_name[]=&";
 		$url .= "option_id[]=&option_name[]=".$option_name3."&";
 		file_get_contents($url);
-		$option_id3 = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name3	."'"))['option_id'];
+		$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name3	."'"));
+		$option_id3 = $query_result['option_id'];
 		
 		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006");
 		$actual = new SimpleXMLElement (file_get_contents($url));	
