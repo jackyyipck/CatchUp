@@ -1,10 +1,12 @@
 <?php
-header('Content-Type: text/xml');
-echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-echo '<response>';
-mysql_connect('localhost', 'seayu_catchup', 'anios');
-mysql_select_db('seayu_catchup');
 
+include 'catchup-lib.php';
+
+init_db();
+
+header("Content-Type: text/xml; charset=utf-8");
+
+echo '<response>';
 $p_user_id = $_GET["user_id"];
 $sql = 'SELECT event_name, event_desc
 FROM tbl_event, tbl_event_user
