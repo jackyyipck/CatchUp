@@ -127,15 +127,16 @@ function create_event_sql($event_name, $event_desc, $start_at, $expire_at, $crea
 			)";
 	return $sql;		
 }
-function create_or_update_event_sql($event_id, $event_name, $event_desc, $start_at, $expire_at, $create_by)
+function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by)
 {
 	$sql = "INSERT INTO tbl_event 
-			(event_id, event_name, event_desc, event_start_at, event_expire_at, event_create_by) 
+			(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by) 
 			VALUES 
 			(
 				'".$event_id."',
 				'".$event_name."', 
 				'".$event_desc."',
+				'".$create_at."',
 				'".$start_at."', 
 				'".$expire_at."', 
 				'".$create_by."'
@@ -144,6 +145,7 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $start_
 			event_id = VALUES(event_id), 
 			event_name = VALUES(event_name), 
 			event_desc = VALUES(event_desc), 
+			event_create_at = VALUES(event_create_at), 
 			event_start_at = VALUES(event_start_at), 
 			event_expire_at = VALUES(event_expire_at), 
 			event_create_by = VALUES(event_create_by)			
@@ -173,6 +175,8 @@ function delete_event_sql($event_id)
 	$sql[] = "DELETE FROM tbl_event_user WHERE event_id = '".$event_id."';";
 	$sql[] = "DELETE FROM tbl_event_option WHERE event_id = '".$event_id."';";
 	$sql[] = "DELETE FROM tbl_event WHERE event_id = '".$event_id."';";
+	$sql[] = "DELETE FROM tbl_comment WHERE comment_id in (SELECT comment_id FROM tbl_comment_event WHERE event_id = '".$event_id."');";
+	$sql[] = "DELETE FROM tbl_comment_event WHERE event_id = '".$event_id."';";
 	return $sql;
 }
 function create_or_update_option_sql($event_id, $option_id, $option_name, $option_desc)

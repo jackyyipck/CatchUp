@@ -54,7 +54,8 @@ function create_or_update_event_detail($db_conn,
 							$event_id,
 							$event_name, 
 							$event_desc, 
-							$start_at,
+							$create_at,
+							$start_at,							
 							$expire_at, 
 							$create_by, 
 							$arr_option_id,
@@ -62,7 +63,7 @@ function create_or_update_event_detail($db_conn,
 							$arr_option_desc, 
 							$arr_invitee_id)
 {
-	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $start_at, $expire_at, $create_by), $db_conn))
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by), $db_conn))
 	{
 		if($event_id=='')
 		{
@@ -88,6 +89,7 @@ function create_or_update_event_detail($db_conn,
 		{		
 			//remove all invitee, and add back based on latest list of invitees
 			if($arr_invitee_id[$i] != '' && $arr_invitee_id[$i] != 0){
+				echo create_event_user_pair_sql($event_id, $arr_invitee_id[$i]);
 				mysql_query(create_event_user_pair_sql($event_id, $arr_invitee_id[$i]), $db_conn);
 			}
 		}

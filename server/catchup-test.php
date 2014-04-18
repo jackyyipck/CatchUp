@@ -4,22 +4,162 @@
 include 'catchup-lib.php';
 include 'xml-lib.php';
 
-set_time_limit(60);
+set_time_limit(300);
 
 init_db();
 
 test_data_cleanup();
 create_test_user();
+test_create_update_delete_event();
+
+/*event operation*/
 test_empty_event();
 test_multiple_invitee();
 test_option();
 test_one_vote();
 test_vote_by_same_invitee();
 test_vote_by_multiple_invitee();
+
+/* general query */
 test_get_user_by_mobile();
 test_create_and_verify_user();
 test_get_comment();
 
+
+function test_create_update_delete_event()
+{
+	$url = get_full_url("create-event-detail.php?");
+	$event_name = "ABC".time();
+	$url .= "event_name=".$event_name."&";
+	$url .= "event_desc=TestEventCreationDesc&";
+	$url .= "create_by=999005&";
+	$url .= "create_at=20131022000000&";
+	$url .= "start_at=20131022000011&";
+	$url .= "expire_at=20131022000022&";
+	$url .= "user_id[]=999007&";
+	$option_name1 = "O1".time();
+	$option_name2 = "O2".time();
+	$url .= "option_id[]=&option_name[]=".$option_name1."&";
+	$url .= "option_id[]=&option_name[]=".$option_name2."&";
+	file_get_contents($url);
+	$event_id = mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event WHERE event_name = '".$event_name."'"))['event_id'];
+	$option_id1 = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name1."'"))['option_id'];
+	$option_id2 = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name2."'"))['option_id'];
+	if($event_id != 0)
+	{
+		printStr("Creating event using form");
+		myAssertPass($url);		
+		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999005");
+		$actual = new SimpleXMLElement (file_get_contents($url));	
+		$expected = new SimpleXMLElement('<events>
+											<event event_id="'.$event_id.'" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-22 00:00:11" event_expire_at="2013-10-22 00:00:22">
+												<event_name>'.$event_name.'</event_name>
+												<event_desc>TestEventCreationDesc</event_desc>
+												<invitor><event_create_by invitor_id="999005">Tester5</event_create_by></invitor>
+												<event_invitees>2</event_invitees>
+												<event_respondents>0</event_respondents>
+												<invitees>
+													<invitees_name invitees_id="999005">Tester5</invitees_name>
+													<invitees_name invitees_id="999007">Tester7</invitees_name>
+												</invitees>
+												<options_num>2</options_num>
+												<options option_latest_timestamp="">
+													<option option_id="'.$option_id1.'">
+														<option_name>'.$option_name1.'</option_name><option_desc/>
+														<users/>
+													</option>
+													<option option_id="'.$option_id2.'">
+														<option_name>'.$option_name2.'</option_name><option_desc/>
+														<users/>
+													</option>
+												</options>
+											</event>
+										</events>');
+		printStr("Verifying event details ");
+		myAssert($url, $actual, $expected);
+		
+		/** Test event attribute update **/
+		printStr("Updating event invitee and option");
+		$url = get_full_url("create-event-detail.php?");
+		$event_name = "ABD".time();
+		$url .= "event_id=".$event_id."&";
+		$url .= "event_name=".$event_name."&";
+		$url .= "event_desc=TestEventCreationDescB&";
+		$url .= "create_by=999006&";
+		$url .= "create_at=20131022000100&";
+		$url .= "start_at=20131022000111&";
+		$url .= "expire_at=20131022000122&";
+		$url .= "user_id[]=999008&";		
+		$option_name1 = "O1".time();
+		$option_name3 = "O3".time();
+		$url .= "option_id[]=".$option_id1."&option_name[]=".$option_name1."&";
+		$url .= "option_id[]=".$option_id2."&option_name[]=&";
+		$url .= "option_id[]=&option_name[]=".$option_name3."&";
+		file_get_contents($url);
+		$option_id3 = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name3	."'"))['option_id'];
+		
+		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006");
+		$actual = new SimpleXMLElement (file_get_contents($url));	
+		$expected = new SimpleXMLElement('<events>
+											<event event_id="'.$event_id.'" event_create_at="2013-10-22 00:01:00" event_start_at="2013-10-22 00:01:11" event_expire_at="2013-10-22 00:01:22">
+												<event_name>'.$event_name.'</event_name>
+												<event_desc>TestEventCreationDescB</event_desc>
+												<invitor><event_create_by invitor_id="999006">Tester6</event_create_by></invitor>
+												<event_invitees>2</event_invitees>
+												<event_respondents>0</event_respondents>
+												<invitees>
+													<invitees_name invitees_id="999006">Tester6</invitees_name>
+													<invitees_name invitees_id="999008">Tester8</invitees_name>
+												</invitees>
+												<options_num>2</options_num>
+												<options option_latest_timestamp="">
+													<option option_id="'.$option_id1.'">
+														<option_name>'.$option_name1.'</option_name><option_desc/>
+														<users/>
+													</option>
+													<option option_id="'.$option_id3.'">
+														<option_name>'.$option_name3.'</option_name><option_desc/>
+														<users/>
+													</option>
+												</options>
+											</event>
+										</events>');
+										
+		myAssert($url, $actual, $expected);
+		
+		/** Test event deletion **/
+		printStr("Deleting event");
+		$url = get_full_url("create-event-detail.php?");
+		$url .= "action=delete&";
+		$url .= "event_id=".$event_id."&";
+		file_get_contents($url);
+		
+		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006");
+		$actual = new SimpleXMLElement (file_get_contents($url));	
+		$expected = new SimpleXMLElement('<events/>');		
+		myAssert($url, $actual, $expected);
+		if (mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_id IN ('".$option_id1."','".$option_id2."','".$option_id3."')")))
+			myAssertFail("Option Cleanup","");
+		else
+			myAssertPass("Option Cleanup");
+		if (mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event_option WHERE option_id IN ('".$option_id1."','".$option_id2."','".$option_id3."')")))
+			myAssertFail("Event-Option Cleanup","");
+		else
+			myAssertPass("Event-Option Cleanup");
+		if (mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event WHERE event_id ='".$event_id."'")))
+			myAssertFail("Event Cleanup","");
+		else
+			myAssertPass("Event Cleanup");
+		if (mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event_user WHERE event_id ='".$event_id."'")))
+			myAssertFail("Event-User Cleanup","");
+		else
+			myAssertPass("Event-User Cleanup");
+	}
+	else
+	{
+		myAssertFail($url, $event_id);
+	}
+}
 function test_get_comment()
 {
 	mysql_query("INSERT INTO tbl_comment
@@ -82,7 +222,11 @@ function create_test_user()
 				('999001', 'Tester1', 'Avatar1', '852123456001', 'Tester1@test.com', '2012-03-04 05:06:07'),
 				('999002', 'Tester2', 'Avatar2', '852123456002', 'Tester2@test.com', '2012-03-04 05:06:08'),
 				('999003', 'Tester3', 'Avatar3', '852123456003', 'Tester3@test.com', '2012-03-04 05:06:09'),
-				('999004', 'Tester4', 'Avatar4', '852123456004', 'Tester4@test.com', '2012-03-04 05:06:10');");
+				('999004', 'Tester4', 'Avatar4', '852123456004', 'Tester4@test.com', '2012-03-04 05:06:10'),
+				('999005', 'Tester5', 'Avatar5', '852123456005', 'Tester5@test.com', '2012-03-04 05:06:11'),
+				('999006', 'Tester6', 'Avatar6', '852123456006', 'Tester6@test.com', '2012-03-04 05:06:12'),
+				('999007', 'Tester7', 'Avatar7', '852123456007', 'Tester7@test.com', '2012-03-04 05:06:13'),
+				('999008', 'Tester8', 'Avatar8', '852123456008', 'Tester8@test.com', '2012-03-04 05:06:14');");
 }
 function test_create_and_verify_user()
 {
@@ -584,7 +728,8 @@ function test_vote_by_multiple_invitee()
 }
 function test_data_cleanup()
 {	
-	mysql_query("DELETE FROM tbl_user WHERE user_id in (999001,999002,999003,999004);");
+	mysql_query("DELETE FROM tbl_user WHERE user_id in (999001,999002,999003,999004,999005,999006,999007,999008);");
+	mysql_query("DELETE FROM tbl_event WHERE event_id in (SELECT event_id FROM tbl_event_user WHERE user_id IN (999005,999006));");
 	mysql_query("DELETE FROM tbl_event WHERE event_id in (99981);");
 	mysql_query("DELETE FROM tbl_event_user WHERE event_id = 99981;");	
 	mysql_query("DELETE FROM tbl_option WHERE option_id in (99881, 99882, 99883);");	
