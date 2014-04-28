@@ -1,0 +1,14 @@
+1. Get comments by event ID and latest comment ID
+   - if comment ID is given, only respond with ID higher than the given one
+   - otherwise, give full comments
+
+2. Security
+   - find hash function common to objective C and php
+   - use https
+
+3. Image by event 
+
+
+Security reading
+http://www.darkreading.com/mobile-security/mobile-app-security-5-frequent-woes-persist/d/d-id/1112706
+https://phpbestpractices.org/
