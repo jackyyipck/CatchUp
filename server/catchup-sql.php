@@ -82,6 +82,7 @@ function get_user_sql_by_user_mobile($arr_user_mobile)
 	$sql = 'SELECT user_id, user_name, user_mobile
 			FROM tbl_user
 			WHERE 1=1
+			AND has_verified = 1
 			AND user_mobile IN ('.substr($str_user_mobile,1).')
 			ORDER BY user_name';
 	return $sql;
