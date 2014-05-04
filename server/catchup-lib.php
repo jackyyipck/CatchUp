@@ -335,4 +335,16 @@ function get_device_id($db_conn, $user_id)
 	}
 	return $return_result;
 }
+function get_vote_status($db_conn, $user_id, $option_id)
+{
+	$vote_status_query_result = mysql_query(get_vote_status_sql($user_id, $option_id), $db_conn);
+	$vote_status_query_row = mysql_fetch_assoc($vote_status_query_result);
+	if (mysql_num_rows($vote_status_query_result) <> 0)
+	{
+		$return_result = 1;
+	} else {
+		$return_result = 0;
+	}
+	return $return_result;
+}
 ?>

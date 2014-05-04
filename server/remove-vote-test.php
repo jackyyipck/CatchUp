@@ -1,4 +1,4 @@
-<form action="create-vote.php" method="post">
+<form action="remove-vote.php" method="post">
 	<table>
 		<tr>
 			<td>User ID:</td>

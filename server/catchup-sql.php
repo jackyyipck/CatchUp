@@ -330,18 +330,18 @@ function remove_vote_sql($option_id, $user_id)
 //primitive functions by Erwin
 function check_existing_user_sql($user_mobile)
 {
- 	$sql = 'SELECT user_id, user_mobile
+ 	$sql = "SELECT user_id, user_mobile
  			FROM tbl_user
  			WHERE 1=1
- 			AND user_mobile = '.$user_mobile;
+ 			AND user_mobile = '".$user_mobile."'";
  	return $sql;
 }
 function get_verify_state_mobile_sql($user_mobile)
 {
-	$sql = 'SELECT user_mobile, verification_code, has_verified
+	$sql = "SELECT user_mobile, verification_code, has_verified
 			FROM tbl_user
 			WHERE 1=1
-			AND user_mobile = '.$user_mobile;
+			AND user_mobile = '".$user_mobile."'";
 	return $sql;		
 }
 function get_comment_sql($p_event_id)
@@ -395,6 +395,14 @@ function get_device_id_sql($user_id)
 	$sql = "SELECT tbl_user.device_id
 			FROM tbl_user
 			WHERE tbl_user.user_id = '".$user_id."'";
+	return $sql;
+}
+function get_vote_status_sql($user_id, $p_option_id)
+{
+	$sql = "SELECT user_id, option_id, create_at
+			FROM tbl_option_user 
+			WHERE user_id = '".$user_id."'
+			AND option_id = '".$p_option_id."'";
 	return $sql;
 }
 ?>

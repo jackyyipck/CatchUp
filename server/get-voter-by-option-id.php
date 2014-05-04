@@ -14,6 +14,11 @@ while($voter_query_row = mysql_fetch_assoc($voter_query_result))
 	$option_name_node = $option_node->addChild('voter_name', $voter_query_row['user_name']);
 	$option_name_node->addAttribute('voter_id',$voter_query_row['user_id']);	
 	$option_name_node->addAttribute('create_at',$voter_query_row['create_at']);	
+	
+	$userdetails_sql = get_userdetails_sql($voter_query_row['user_id']);
+	$userdetails_query_result = mysql_query($userdetails_sql);
+	$userdetails_query_row = mysql_fetch_assoc($userdetails_query_result);
+	$option_name_node->addAttribute('voter_mobile', 	$userdetails_query_row['user_mobile']);
 }
 mysql_free_result($voter_query_result);
 

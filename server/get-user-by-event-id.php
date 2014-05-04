@@ -1,24 +1,25 @@
 <?php
-header('Content-Type: text/xml');
-echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-echo '<response>';
-mysql_connect('localhost', 'seayu_catchup', 'anios');
-mysql_select_db('seayu_catchup');
+include 'catchup-lib.php';
+init_db();
+header("Content-Type: text/xml; charset=utf-8");
+mysql_set_charset('utf8');
 
-$p_event_id = $_GET["event_id"];
-$sql = 'SELECT user_name
-FROM tbl_user, tbl_event_user
-WHERE 1=1
-AND tbl_user.user_id= tbl_event_user.user_id
-AND tbl_event_user.event_id = '.$p_event_id ;
+//XML compilation*****************
+$response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
 
-$result = mysql_query($sql);
+$user_sql = get_user_sql($_GET["event_id"]);
+$user_query_result = mysql_query($user_sql);
 
-while($data = mysql_fetch_assoc($result)) {
-  foreach($data as $key => $value) {
-    echo "<$key>$value</$key>";
-  }
+while($user_query_row = mysql_fetch_assoc($user_query_result)) 
+{
+	
+	$user_name_node = $response_row_node->addChild('invitees', $user_query_row['user_name']);
+	$user_name_node->addAttribute('user_id',$user_query_row['user_id']);
+
 }
-echo '</response>';
+
+mysql_free_result($user_query_result);
+
+echo $response_row_node->asXML();
 
 ?>

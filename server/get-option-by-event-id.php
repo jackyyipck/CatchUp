@@ -26,6 +26,18 @@ while($option_query_row = mysql_fetch_assoc($option_query_result))
 	$voter_query_result = mysql_query($voter_sql);
 	$option_name_node->addAttribute('voters_num',mysql_num_rows($voter_query_result));
 	mysql_free_result($voter_query_result);	
+	
+	$vote_status_sql = get_vote_status_sql($_GET["user_id"], $option_query_row['option_id']);
+	$vote_status_query_result = mysql_query($vote_status_sql);
+	if (mysql_num_rows($vote_status_query_result) <> 0)
+	{
+		$option_name_node->addAttribute('vote_status', 1);
+	}
+	else
+	{
+		$option_name_node->addAttribute('vote_status', 0);
+	}
+	mysql_free_result($vote_status_query_result);
 }
 mysql_free_result($option_query_result);
 
@@ -40,6 +52,7 @@ $rsvp_node = $response_row_node->addChild('option_name', "Pending RSVP");
 $rsvp_node->addAttribute('option_id',"N");
 $rsvp_node->addAttribute('option_desc',"");
 $rsvp_node->addAttribute('voters_num', $rsvp_num);
+$rsvp_node->addAttribute('vote_status', 0);
 	
 mysql_free_result($respondent_query_result);
 mysql_free_result($invitee_query_result);
