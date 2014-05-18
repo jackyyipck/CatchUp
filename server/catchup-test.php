@@ -10,9 +10,10 @@ init_db();
 
 test_data_cleanup();
 create_test_user();
+
 test_create_update_delete_event();
 
-/*event operation*/
+//event operation
 test_empty_event();
 test_multiple_invitee();
 test_option();
@@ -20,7 +21,7 @@ test_one_vote();
 test_vote_by_same_invitee();
 test_vote_by_multiple_invitee();
 
-/* general query */
+// general query 
 test_get_user_by_mobile();
 test_create_and_verify_user();
 test_get_comment();
@@ -216,7 +217,83 @@ function test_get_comment()
 										</comment>
 									  </response>');
 									  
-	myAssert($url, $actual, $expected);		
+	myAssert($url, $actual, $expected);	
+
+	/**********************************************************/
+	// Testing by user id
+	mysql_query("INSERT INTO tbl_event_user
+				(event_id, user_id)
+				VALUES 
+				('99982',  '999001');");
+	mysql_query("INSERT INTO tbl_event_user
+				(event_id, user_id)
+				VALUES 
+				('99983',  '999001');");	
+	// Event 99982's comments
+	mysql_query("INSERT INTO tbl_comment
+				(comment_id, create_by, create_at, comment)
+				VALUES 
+				('9903',  '999001', '2012-03-04 05:06:12', 'Comment message 9903');");		
+	mysql_query("INSERT INTO tbl_comment
+				(comment_id, create_by, create_at, comment)
+				VALUES 
+				('9904',  '999002', '2012-03-04 05:06:13', 'Comment message 9904');");	
+	mysql_query("INSERT INTO tbl_comment
+				(comment_id, create_by, create_at, comment)
+				VALUES 
+				('9905',  '999001', '2012-03-04 05:06:15', 'Comment message 9905');");				
+	mysql_query("INSERT INTO tbl_comment_event 
+				(event_id, comment_id)
+				VALUES 
+				('99982',  '9903'), ('99982',  '9904'), ('99982',  '9905');");		
+	// Event 99983's comments
+	mysql_query("INSERT INTO tbl_comment
+				(comment_id, create_by, create_at, comment)
+				VALUES 
+				('9906',  '999003', '2012-03-04 05:07:12', 'Comment message 9906');");		
+	mysql_query("INSERT INTO tbl_comment
+				(comment_id, create_by, create_at, comment)
+				VALUES 
+				('9907',  '999002', '2012-03-04 05:08:12', 'Comment message 9907');");				
+	mysql_query("INSERT INTO tbl_comment_event 
+				(event_id, comment_id)
+				VALUES 
+				('99983',  '9906'), ('99983',  '9907');");		
+	
+	printStr("Created multiple events and messages by multiple users");					
+	
+	$url = get_full_url("get-comment-by-user-id.php?user_id=999001");
+	$actual = new SimpleXMLElement (file_get_contents($url));
+	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
+				<response>
+					<event event_id="99982">
+						<comment comment_id="9903" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:12">Comment message 9903</comment>
+						<comment comment_id="9904" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:06:13">Comment message 9904</comment>
+						<comment comment_id="9905" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:15">Comment message 9905</comment>
+					</event>
+					<event event_id="99983">
+						<comment comment_id="9906" commenter="Tester3" create_by="999003" create_at="2012-03-04 05:07:12">Comment message 9906</comment>
+						<comment comment_id="9907" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:08:12">Comment message 9907</comment>
+					</event>
+				</response>');
+									  
+	myAssert($url, $actual, $expected);	
+	
+	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&last_comment_id=9903");
+	$actual = new SimpleXMLElement (file_get_contents($url));
+	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
+					<response>
+						<event event_id="99982">
+							<comment comment_id="9904" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:06:13">Comment message 9904</comment>
+							<comment comment_id="9905" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:15">Comment message 9905</comment>
+						</event>
+						<event event_id="99983">
+							<comment comment_id="9906" commenter="Tester3" create_by="999003" create_at="2012-03-04 05:07:12">Comment message 9906</comment>
+							<comment comment_id="9907" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:08:12">Comment message 9907</comment>
+						</event>
+					</response>');
+									  
+	myAssert($url, $actual, $expected);	
 }
 function create_test_user()
 {
@@ -740,13 +817,13 @@ function test_data_cleanup()
 {	
 	mysql_query("DELETE FROM tbl_user WHERE user_id in (999001,999002,999003,999004,999005,999006,999007,999008);");
 	mysql_query("DELETE FROM tbl_event WHERE event_id in (SELECT event_id FROM tbl_event_user WHERE user_id IN (999005,999006));");
-	mysql_query("DELETE FROM tbl_event WHERE event_id in (99981);");
-	mysql_query("DELETE FROM tbl_event_user WHERE event_id = 99981;");	
+	mysql_query("DELETE FROM tbl_event WHERE event_id in (99981, 99982, 99983);");
+	mysql_query("DELETE FROM tbl_event_user WHERE event_id IN (99981, 99982, 99983);");	
 	mysql_query("DELETE FROM tbl_option WHERE option_id in (99881, 99882, 99883);");	
 	mysql_query("DELETE FROM tbl_option_user WHERE option_id in (SELECT option_id FROM tbl_event_option WHERE event_id = 99981);");
-	mysql_query("DELETE FROM tbl_event_option WHERE event_id = 99981;");
-	mysql_query("DELETE FROM tbl_comment WHERE comment_id in (SELECT comment_id FROM tbl_comment WHERE event_id = 99981);");
-	mysql_query("DELETE FROM tbl_comment_event WHERE event_id = 99981;");
+	mysql_query("DELETE FROM tbl_event_option WHERE event_id IN (99981,99982, 99983);");
+	mysql_query("DELETE FROM tbl_comment WHERE comment_id in (SELECT comment_id FROM tbl_comment WHERE event_id = (99981, 99982));");
+	mysql_query("DELETE FROM tbl_comment_event WHERE event_id IN (99981,99982, 99983);");
 }
 
 function get_full_url($filename)

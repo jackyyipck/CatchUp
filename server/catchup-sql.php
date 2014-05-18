@@ -355,6 +355,22 @@ function get_comment_sql($p_event_id)
 			ORDER BY create_at DESC';
 	return $sql;
 }
+function get_comment_after_last_comment_id_sql($p_user_id, $p_last_comment_id)
+{
+	$sql = 'SELECT tbl_comment_event.event_id, tbl_comment.comment_id, create_by, create_at, comment
+			FROM tbl_comment, tbl_comment_event
+			WHERE 1=1
+			AND tbl_comment.comment_id = tbl_comment_event.comment_id
+			AND tbl_comment_event.event_id IN 
+			(
+				SELECT event_id
+				FROM tbl_event_user
+				WHERE user_id = '.$p_user_id.'
+			)
+			AND tbl_comment.comment_id > '.$p_last_comment_id.'
+			ORDER BY event_id, comment_id';
+	return $sql;
+}
 function get_userdetails_sql($p_user_id)
 {
 	$sql = 'SELECT tbl_user.user_id, user_name, user_avatar_filename, user_mobile, user_email, user_status
