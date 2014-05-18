@@ -23,6 +23,7 @@ while($user_query_row = mysql_fetch_assoc($user_query_result))
 	$user_name_node = $response_row_node->addChild('user_name', $user_query_row['user_name']);
 	$user_name_node->addAttribute('user_id',$user_query_row['user_id']);
 	$user_name_node->addAttribute('user_mobile',$user_query_row['user_mobile']);
+	$user_name_node->addAttribute('user_status',$user_query_row['user_status']);
 }
 mysql_free_result($user_query_result);
 

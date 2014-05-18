@@ -208,9 +208,9 @@ function reset_verify_code_and_state($db_conn, $user_id)
 	mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code, ""), $db_conn);
 	return array($user_id, $verification_code);
 }
-function enrich_user($db_conn, $user_id, $user_name, $user_avatar_filename, $user_email)
+function enrich_user($db_conn, $user_id, $user_name, $user_avatar_filename, $user_email, $user_status)
 {
-	return mysql_query(update_user_sql($user_id, $user_name, $user_avatar_filename, $user_email), $db_conn);
+	return mysql_query(update_user_sql($user_id, $user_name, $user_avatar_filename, $user_email, $user_status), $db_conn);
 }
 function remove_user($db_conn, $user_id)
 {

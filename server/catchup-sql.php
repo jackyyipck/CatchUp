@@ -79,10 +79,11 @@ function get_user_sql_by_user_mobile($arr_user_mobile)
 	{
 		$str_user_mobile .= ",'".$user_mobile."'";
 	}
-	$sql = 'SELECT user_id, user_name, user_mobile
+	$sql = 'SELECT user_id, user_name, user_mobile, user_status
 			FROM tbl_user
 			WHERE 1=1
 			AND has_verified = 1
+			AND user_name IS NOT NULL
 			AND user_mobile IN ('.substr($str_user_mobile,1).')
 			ORDER BY user_name';
 	return $sql;
@@ -260,10 +261,9 @@ function remove_invitee_sql($event_id)
 function create_verify_code_sql($user_mobile, $verification_code, $device_id)
 {
 	$sql = "INSERT INTO tbl_user
-			(user_name, user_mobile, verification_code, device_id, has_verified) 
+			(user_mobile, verification_code, device_id, has_verified) 
 			VALUES 
 			(
-				'TBD', 
 				'".$user_mobile."',
 				'".$verification_code."',
 				'".$device_id."',
@@ -287,12 +287,13 @@ function get_verify_state_sql($user_id)
 			AND user_id = '.$user_id;
 	return $sql;		
 }
-function update_user_sql($user_id, $user_name, $user_avatar_filename, $user_email)
+function update_user_sql($user_id, $user_name, $user_avatar_filename, $user_email, $user_status)
 {
 	$sql = "UPDATE tbl_user
 			SET user_name = '".$user_name."', 
 			    user_avatar_filename = '".$user_avatar_filename."',
-				user_email = '".$user_email."'
+				user_email = '".$user_email."',
+				user_status = '".$user_status."'
 			WHERE user_id = '".$user_id."'";
 	return $sql;		
 }
@@ -356,7 +357,7 @@ function get_comment_sql($p_event_id)
 }
 function get_userdetails_sql($p_user_id)
 {
-	$sql = 'SELECT tbl_user.user_id, user_name, user_avatar_filename, user_mobile, user_email
+	$sql = 'SELECT tbl_user.user_id, user_name, user_avatar_filename, user_mobile, user_email, user_status
 			FROM tbl_user
 			WHERE tbl_user.user_id = '.$p_user_id;
 	return $sql;

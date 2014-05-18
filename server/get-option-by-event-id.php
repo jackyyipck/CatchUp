@@ -15,6 +15,8 @@ $return_value = get_event_detail($_SESSION["db_conn"], $_GET["event_id"]);
 
 $event_name_node = $response_row_node->addChild('event_name', $return_value['event']['event_name']);
 $event_desc_node = $response_row_node->addChild('event_desc', $return_value['event']['event_desc']);
+$event_start_node = $response_row_node->addChild('start_date', $return_value['event']['event_start_at']);
+$event_expire_node = $response_row_node->addChild('expiry_date', $return_value['event']['event_expire_at']);
 
 while($option_query_row = mysql_fetch_assoc($option_query_result)) 
 {

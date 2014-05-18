@@ -1,8 +1,19 @@
 <?php
 include 'catchup-lib.php';
 init_db();
-header("Content-Type: text/xml; charset=utf-8");
 
+$action = "";
+if(isset($_GET["action"]))
+{
+	$action = $_GET["action"];
+}
+else
+{
+	$action = $_POST["action"];
+}
+
+if($action == "get-vote-status")
+{
 	$return_value = 0;
 	if(isset($_GET["action"]))
 	{
@@ -16,11 +27,5 @@ header("Content-Type: text/xml; charset=utf-8");
 	}	
 
 	echo $return_value;
-	
-//XML compilation*****************
-$response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
-
-$vote_status_sql = get_vote_status_sql($_GET["user_id"], $_GET["option_id"]);
-
-
+}
 ?>

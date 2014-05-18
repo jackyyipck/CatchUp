@@ -102,7 +102,8 @@ elseif($action == "enrich-user")
 								 $_GET["user_id"],
 								 $_GET["user_name"],
 								 "notestfile",								 
-								 $_GET["user_email"]);
+								 $_GET["user_email"],
+								 $_GET["user_status"]);
 	}
 	else
 	{
@@ -112,7 +113,8 @@ elseif($action == "enrich-user")
 								 $_POST["user_id"],
 								 $_POST["user_name"],
 								 $target_filename,								 
-								 $_POST["user_email"]);		
+								 $_POST["user_email"],
+								 $_POST["user_status"]);		
 	}	
 	$response_row_node->addChild('enrichment_status',$return_value);
 }

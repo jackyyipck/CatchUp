@@ -18,7 +18,8 @@ while($voter_query_row = mysql_fetch_assoc($voter_query_result))
 	$userdetails_sql = get_userdetails_sql($voter_query_row['user_id']);
 	$userdetails_query_result = mysql_query($userdetails_sql);
 	$userdetails_query_row = mysql_fetch_assoc($userdetails_query_result);
-	$option_name_node->addAttribute('voter_mobile', 	$userdetails_query_row['user_mobile']);
+	$option_name_node->addAttribute('voter_mobile', $userdetails_query_row['user_mobile']);
+	$option_name_node->addAttribute('voter_status', $userdetails_query_row['user_status']);
 }
 mysql_free_result($voter_query_result);
 
