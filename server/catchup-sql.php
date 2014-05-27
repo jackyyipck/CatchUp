@@ -90,7 +90,7 @@ function get_user_sql_by_user_mobile($arr_user_mobile)
 }
 function get_event_sql($p_user_id)
 {
-	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by
+	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday
 			FROM tbl_event, tbl_event_user
 			WHERE 1=1
 			AND tbl_event.event_id = tbl_event_user.event_id
@@ -99,7 +99,7 @@ function get_event_sql($p_user_id)
 }
 function get_event_by_event_id_sql($p_event_id)
 {
-	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by
+	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday
 			FROM tbl_event
 			WHERE 1=1
 			AND event_id = '.$p_event_id;
@@ -129,10 +129,10 @@ function create_event_sql($event_name, $event_desc, $start_at, $expire_at, $crea
 			)";
 	return $sql;		
 }
-function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by)
+function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday)
 {
 	$sql = "INSERT INTO tbl_event 
-			(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by) 
+			(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday) 
 			VALUES 
 			(
 				'".$event_id."',
@@ -141,7 +141,8 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 				'".$create_at."',
 				'".$start_at."', 
 				'".$expire_at."', 
-				'".$create_by."'
+				'".$create_by."',
+				'".$is_allday."'
 			)
 			ON DUPLICATE KEY UPDATE
 			event_id = VALUES(event_id), 
@@ -150,13 +151,14 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 			event_create_at = VALUES(event_create_at), 
 			event_start_at = VALUES(event_start_at), 
 			event_expire_at = VALUES(event_expire_at), 
-			event_create_by = VALUES(event_create_by)			
+			event_create_by = VALUES(event_create_by),	
+			is_allday = VALUES(is_allday)
 			";
 	return $sql;		
 }
 function remove_event_sql($event_id)
 {
-	$sql = "DELETE tbl_event WHERE event_id = ".$event_id;
+	$sql = "DELETE FROM tbl_event WHERE event_id = ".$event_id;
 	return $sql;
 }
 function create_option_sql($option_name, $option_desc)
@@ -218,7 +220,7 @@ function create_or_update_option_sql($event_id, $option_id, $option_name, $optio
 
 function remove_option_sql($option_id)
 {
-	$sql = "DELETE tbl_option WHERE option_id = ".$option_id;
+	$sql = "DELETE FROM tbl_option WHERE option_id = ".$option_id;
 	return $sql;
 }
 function create_event_option_pair_sql($event_id, $option_id)
@@ -234,7 +236,7 @@ function create_event_option_pair_sql($event_id, $option_id)
 }
 function remove_event_option_pair_sql($event_id, $option_id)
 {
-	$sql = "DELETE tbl_event_option WHERE event_id = ".$event_id." AND option_id = ".$option_id;
+	$sql = "DELETE FROM tbl_event_option WHERE event_id = ".$event_id." AND option_id = ".$option_id;
 	return $sql;
 }
 function create_event_user_pair_sql($event_id, $user_id)
@@ -250,7 +252,7 @@ function create_event_user_pair_sql($event_id, $user_id)
 }
 function remove_event_user_pair_sql($event_id, $user_id)
 {
-	$sql = "DELETE tbl_event_user WHERE event_id = ".$event_id." AND user_id = ".$user_id;
+	$sql = "DELETE FROM tbl_event_user WHERE event_id = ".$event_id." AND user_id = ".$user_id;
 	return $sql;
 }
 function remove_invitee_sql($event_id)
@@ -309,7 +311,7 @@ function verify_user_sql($user_id, $verification_code)
 }
 function remove_user_sql($user_id)
 {
-	$sql = "DELETE tbl_user WHERE user_id = ".$user_id;
+	$sql = "DELETE FROM tbl_user WHERE user_id = ".$user_id;
 	return $sql;
 }
 function create_vote_sql($option_id, $user_id)
@@ -325,7 +327,7 @@ function create_vote_sql($option_id, $user_id)
 }
 function remove_vote_sql($option_id, $user_id)
 {
-	$sql = "DELETE tbl_option_user WHERE option_id = ".$option_id." AND user_id = ".$user_id;
+	$sql = "DELETE FROM tbl_option_user WHERE option_id = ".$option_id." AND user_id = ".$user_id;
 	return $sql;
 }
 //primitive functions by Erwin
@@ -345,13 +347,14 @@ function get_verify_state_mobile_sql($user_mobile)
 			AND user_mobile = '".$user_mobile."'";
 	return $sql;		
 }
-function get_comment_sql($p_event_id)
+function get_comment_by_event_id_sql($p_event_id, $p_last_comment_id)
 {
 	$sql = 'SELECT tbl_comment.comment_id, create_by, create_at, comment
 			FROM tbl_comment, tbl_comment_event
 			WHERE 1=1
 			AND tbl_comment.comment_id = tbl_comment_event.comment_id
 			AND tbl_comment_event.event_id = '.$p_event_id.'
+			AND tbl_comment.comment_id > '.$p_last_comment_id.'
 			ORDER BY create_at DESC';
 	return $sql;
 }

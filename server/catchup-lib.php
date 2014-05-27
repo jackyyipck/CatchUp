@@ -58,12 +58,14 @@ function create_or_update_event_detail($db_conn,
 							$start_at,							
 							$expire_at, 
 							$create_by, 
+							$is_allday,
 							$arr_option_id,
 							$arr_option_name, 
 							$arr_option_desc, 
-							$arr_invitee_id)
+							$arr_invitee_id
+							)
 {
-	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by), $db_conn))
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday), $db_conn))
 	{
 		if($event_id=='')
 		{
@@ -113,6 +115,7 @@ function get_event_detail($db_conn, $event_id)
 		$result['event']['event_start_at'] = $event_query_row['event_start_at'];
 		$result['event']['event_expire_at'] = $event_query_row['event_expire_at'];
 		$result['event']['event_create_by'] = $event_query_row['event_create_by'];
+		$result['event']['is_allday'] = $event_query_row['is_allday'];
 	}
 	mysql_free_result($event_query_result);
 	

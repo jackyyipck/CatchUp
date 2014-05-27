@@ -19,6 +19,7 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	$event_node->addAttribute('event_create_at',$event_list_query_row['event_create_at']);
 	$event_node->addAttribute('event_start_at',$event_list_query_row['event_start_at']);
 	$event_node->addAttribute('event_expire_at',$event_list_query_row['event_expire_at']);
+	$event_node->addAttribute('is_allday',$event_list_query_row['is_allday']);
 	
 	//******<invitor>*********
 	$invitor_sql = get_userdetails_sql($event_list_query_row['event_create_by']);

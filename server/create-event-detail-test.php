@@ -38,6 +38,10 @@ if(isset($_GET['event_id']))
 			<td>Expire at:</td>
 			<td><input type="text" name="expire_at" value="<?php echo $arr_event_detail['event']['event_expire_at']; ?>"/></td>
 		</tr>
+		<tr>
+			<td>is All Day:</td>
+			<td><input type="text" name="is_allday" value="<?php echo $arr_event_detail['event']['is_allday']; ?>"/></td>
+		</tr>
 		<?php
 			for($i=0; $i<$arr_event_detail['invitees_num']; $i++)
 			{
@@ -124,6 +128,10 @@ if(isset($_GET['event_id']))
 				<td>Expire at:</td>
 				<td><input type="text" name="expire_at" value="2013-10-26 09:27:26"/></td>
 			</tr>
+		<tr>
+			<td>is All Day:</td>
+			<td><input type="text" name="is_allday" /></td>
+		</tr>
 			<tr>
 				<td>Option ID:</td>
 				<td><input type="text" name="option_id[]" readonly/></td>

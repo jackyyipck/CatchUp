@@ -19,6 +19,7 @@ if(@$_REQUEST["action"] == "delete"){
 						@$_REQUEST["start_at"],
 						@$_REQUEST["expire_at"],
 						@$_REQUEST["create_by"],
+						@$_REQUEST["is_allday"],
 						@$_REQUEST["option_id"],
 						@$_REQUEST["option_name"],
 						@$_REQUEST["option_desc"],
