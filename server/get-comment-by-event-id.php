@@ -34,8 +34,8 @@ while($comment_query_row = mysql_fetch_assoc($comment_query_result))
 	
 }
 
-mysql_free_result($userdetail_query_result);
-mysql_free_result($comment_query_result);
+if ($userdetail_query_result != null) mysql_free_result($userdetail_query_result);
+if ($comment_query_result != null) mysql_free_result($comment_query_result);
 
 echo $response_row_node->asXML();
 

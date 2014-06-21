@@ -17,6 +17,7 @@ $event_name_node = $response_row_node->addChild('event_name', $return_value['eve
 $event_desc_node = $response_row_node->addChild('event_desc', $return_value['event']['event_desc']);
 $event_start_node = $response_row_node->addChild('start_date', $return_value['event']['event_start_at']);
 $event_expire_node = $response_row_node->addChild('expiry_date', $return_value['event']['event_expire_at']);
+$event_isallday_node = $response_row_node->addChild('is_allday', $return_value['event']['is_allday']);
 
 while($option_query_row = mysql_fetch_assoc($option_query_result)) 
 {

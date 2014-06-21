@@ -355,7 +355,7 @@ function get_comment_by_event_id_sql($p_event_id, $p_last_comment_id)
 			AND tbl_comment.comment_id = tbl_comment_event.comment_id
 			AND tbl_comment_event.event_id = '.$p_event_id.'
 			AND tbl_comment.comment_id > '.$p_last_comment_id.'
-			ORDER BY create_at DESC';
+			ORDER BY create_at';
 	return $sql;
 }
 function get_comment_after_last_comment_id_sql($p_user_id, $p_last_comment_id)
