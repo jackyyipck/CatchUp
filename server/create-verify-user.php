@@ -21,7 +21,7 @@ if($action == "create-verify-code")
 	if(isset($_GET["action"]))
 	{
 		$return_value = create_verify_code($_SESSION["db_conn"],
-								 $_GET["user_mobile"], $_GET["device_id"]);
+								 $_GET["user_mobile"], $_GET["device_id"]);	
 	}
 	else
 	{
