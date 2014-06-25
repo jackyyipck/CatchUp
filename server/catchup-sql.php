@@ -99,7 +99,7 @@ function get_event_sql($p_user_id)
 }
 function get_event_by_event_id_sql($p_event_id)
 {
-	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday
+	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename
 			FROM tbl_event
 			WHERE 1=1
 			AND event_id = '.$p_event_id;
@@ -129,10 +129,10 @@ function create_event_sql($event_name, $event_desc, $start_at, $expire_at, $crea
 			)";
 	return $sql;		
 }
-function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday)
+function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday, $event_profile_filename)
 {
 	$sql = "INSERT INTO tbl_event 
-			(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday) 
+			(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename) 
 			VALUES 
 			(
 				'".$event_id."',
@@ -142,7 +142,9 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 				'".$start_at."', 
 				'".$expire_at."', 
 				'".$create_by."',
-				'".$is_allday."'
+				'".$is_allday."',
+				'".$event_profile_filename."'
+				
 			)
 			ON DUPLICATE KEY UPDATE
 			event_id = VALUES(event_id), 
@@ -152,7 +154,8 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 			event_start_at = VALUES(event_start_at), 
 			event_expire_at = VALUES(event_expire_at), 
 			event_create_by = VALUES(event_create_by),	
-			is_allday = VALUES(is_allday)
+			is_allday = VALUES(is_allday),
+			event_profile_filename = VALUES(event_profile_filename)
 			";
 	return $sql;		
 }

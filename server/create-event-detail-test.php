@@ -7,7 +7,7 @@ if(isset($_GET['event_id']))
 {
 	$arr_event_detail = get_event_detail($_SESSION["db_conn"], $_GET['event_id']);
 ?>
-	<form action="create-event-detail.php" method="post">
+	<form action="create-event-detail.php" method="post" enctype="multipart/form-data">
 	<table>
 		<tr>
 			<td>Event ID:</td>
@@ -41,6 +41,13 @@ if(isset($_GET['event_id']))
 		<tr>
 			<td>is All Day:</td>
 			<td><input type="text" name="is_allday" value="<?php echo $arr_event_detail['event']['is_allday']; ?>"/></td>
+		</tr>
+		<tr>
+			<td>Event Profile Pic:</td>
+			<td>
+				<input type="file" name="event_profile_pic" id="event_profile_pic" />
+				<input type="hidden" name="event_profile_pic_filename" id="event_profile_pic_filename" value="<?php echo $arr_event_detail['event']['event_profile_filename']; ?>" />
+			</td>
 		</tr>
 		<?php
 			for($i=0; $i<$arr_event_detail['invitees_num']; $i++)
@@ -102,7 +109,7 @@ if(isset($_GET['event_id']))
 	else
 	{
 ?>
-	<form action="create-event-detail.php" method="post">
+	<form action="create-event-detail.php" method="post" enctype="multipart/form-data">
 		<table>
 			<tr>
 				<td>Event ID:</td>
@@ -131,6 +138,12 @@ if(isset($_GET['event_id']))
 		<tr>
 			<td>is All Day:</td>
 			<td><input type="text" name="is_allday" /></td>
+		</tr>
+		<tr>
+			<td>Event Profile Pic:</td>
+			<td>
+				<input type="file" name="event_profile_pic" id="event_profile_pic" />				
+			</td>
 		</tr>
 			<tr>
 				<td>Option ID:</td>

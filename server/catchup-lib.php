@@ -62,16 +62,45 @@ function create_or_update_event_detail($db_conn,
 							$arr_option_id,
 							$arr_option_name, 
 							$arr_option_desc, 
-							$arr_invitee_id
+							$arr_invitee_id,
+							$event_profile_filename,
+							$event_profile_pic_object
 							)
 {
-	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday), $db_conn))
+	
+	$target_filename = "";
+	if (!empty($event_profile_pic_object["tmp_name"]) && is_uploaded_file($event_profile_pic_object["tmp_name"]))
+	{
+		echo "isset!";
+		switch ($_FILES['event_profile_pic']['error']) 
+		{
+			case UPLOAD_ERR_OK:
+				break;
+			case UPLOAD_ERR_NO_FILE:
+				throw new RuntimeException('No file sent.');
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				throw new RuntimeException('Exceeded filesize limit.');
+			default:
+				throw new RuntimeException('Unknown errors.');
+		}	
+		$target_filename = "avatars/event_".time().$event_profile_pic_object["name"];
+		move_uploaded_file($event_profile_pic_object["tmp_name"], $target_filename);
+	}
+	else
+	{	
+		// If no file object, attempt to get filename
+		echo "no file found, using old value: ".$event_profile_filename;
+		$target_filename = $event_profile_filename;
+	}
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday, $target_filename), $db_conn))
 	{
 		if($event_id=='')
 		{
 			$event_id = mysql_insert_id($db_conn);
 		}
 	}
+			
 	if ($event_id > 0)
 	{
 		for($i = 0; $i<count($arr_option_id); $i++)
@@ -116,6 +145,7 @@ function get_event_detail($db_conn, $event_id)
 		$result['event']['event_expire_at'] = $event_query_row['event_expire_at'];
 		$result['event']['event_create_by'] = $event_query_row['event_create_by'];
 		$result['event']['is_allday'] = $event_query_row['is_allday'];
+		$result['event']['event_profile_filename'] = $event_query_row['event_profile_filename'];
 	}
 	mysql_free_result($event_query_result);
 	
