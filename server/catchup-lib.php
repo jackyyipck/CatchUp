@@ -90,7 +90,6 @@ function create_or_update_event_detail($db_conn,
 	else
 	{	
 		// If no file object, attempt to get filename
-		echo "no file found, using old value: ".$event_profile_filename;
 		$target_filename = $event_profile_filename;
 	}
 	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday, $target_filename), $db_conn))
@@ -100,9 +99,21 @@ function create_or_update_event_detail($db_conn,
 			$event_id = mysql_insert_id($db_conn);
 		}
 	}
-			
 	if ($event_id > 0)
 	{
+		// Check if there exists "Not joining" option, append one if not
+		$has_not_joining_option = false;
+		for($i = 0; $i<count($arr_option_id); $i++)
+		{
+			if($arr_option_name[$i] == "Not joining"){
+				$has_not_joining_option = true;
+				break;
+			}
+		}
+		if(!$has_not_joining_option){
+			$arr_option_name[] = "Not joining";
+			$arr_option_id [] = "";
+		}
 		for($i = 0; $i<count($arr_option_id); $i++)
 		{
 			//loop through all options
