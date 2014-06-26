@@ -240,6 +240,7 @@ function remove_option_event($db_conn, $option_id)
 }
 function create_vote($db_conn, $user_id, $option_id)
 {
+	//TODO notification
 	return mysql_query(create_vote_sql($option_id, $user_id), $db_conn);
 }
 function remove_vote($db_conn, $user_id, $option_id)
@@ -327,6 +328,7 @@ function get_verify_state_mobile($db_conn, $user_mobile)
 }
 function create_comments($db_conn, $user_comment, $create_by)
 {
+	//TODO notification
 	$comment_id = 0;
 	if (mysql_query(create_comments_sql($user_comment, $create_by), $db_conn))
 	{
