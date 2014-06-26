@@ -11,6 +11,7 @@ init_db();
 test_data_cleanup();
 create_test_user();
 
+
 test_create_update_delete_event();
 
 //event operation
@@ -50,6 +51,8 @@ function test_create_update_delete_event()
 	$option_id1 = $query_result['option_id'];
 	$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name2."'"));
 	$option_id2 = $query_result['option_id'];
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = 'Not joining'"));
+	$option_idNJ = $query_result['option_id'];
 	if($event_id != 0)
 	{
 		printStr("Creating event using form");
@@ -67,7 +70,7 @@ function test_create_update_delete_event()
 													<invitees_name invitees_id="999005">Tester5</invitees_name>
 													<invitees_name invitees_id="999007">Tester7</invitees_name>
 												</invitees>
-												<options_num>2</options_num>
+												<options_num>3</options_num>
 												<options option_latest_timestamp="">
 													<option option_id="'.$option_id1.'">
 														<option_name>'.$option_name1.'</option_name><option_desc/>
@@ -75,6 +78,10 @@ function test_create_update_delete_event()
 													</option>
 													<option option_id="'.$option_id2.'">
 														<option_name>'.$option_name2.'</option_name><option_desc/>
+														<users/>
+													</option>
+													<option option_id="'.$option_idNJ.'">
+														<option_name>Not joining</option_name><option_desc/>
 														<users/>
 													</option>
 												</options>
@@ -118,7 +125,7 @@ function test_create_update_delete_event()
 													<invitees_name invitees_id="999006">Tester6</invitees_name>
 													<invitees_name invitees_id="999008">Tester8</invitees_name>
 												</invitees>
-												<options_num>2</options_num>
+												<options_num>4</options_num>
 												<options option_latest_timestamp="">
 													<option option_id="'.$option_id1.'">
 														<option_name>'.$option_name1.'</option_name><option_desc/>
@@ -126,6 +133,10 @@ function test_create_update_delete_event()
 													</option>
 													<option option_id="'.$option_id3.'">
 														<option_name>'.$option_name3.'</option_name><option_desc/>
+														<users/>
+													</option>
+													<option option_id="'.$option_idNJ.'">
+														<option_name>Not joining</option_name><option_desc/>
 														<users/>
 													</option>
 												</options>
@@ -169,7 +180,7 @@ function test_create_update_delete_event()
 }
 function test_get_comment()
 {
-	mysql_query("INSERT INTO tbl_comment
+	/*mysql_query("INSERT INTO tbl_comment
 				(comment_id, create_by, create_at, comment)
 				VALUES 
 				('9901',  '999001', '2012-03-04 05:06:11', 'Comment message');");
@@ -178,7 +189,9 @@ function test_get_comment()
 				(event_id, comment_id)
 				VALUES 
 				('99981',  '9901');");
-				
+	*/
+	create_comment_detail($_SESSION["db_conn"], 'Comment message', '999001', '99981');		
+	
 	printStr("Created one test comment msg");
 	
 	$url = get_full_url("get-comment-by-event-id.php?event_id=99981");
@@ -193,7 +206,7 @@ function test_get_comment()
 	myAssert($url, $actual, $expected);
 	
 	
-	
+	/*
 	mysql_query("INSERT INTO tbl_comment
 				(comment_id, create_by, create_at, comment)
 				VALUES 
@@ -202,7 +215,9 @@ function test_get_comment()
 	mysql_query("INSERT INTO tbl_comment_event 
 				(event_id, comment_id)
 				VALUES 
-				('99981',  '9902');");				
+				('99981',  '9902');");		
+	*/
+	create_comment_detail($_SESSION["db_conn"], 'Comment message 2', '999001', '99981');	
 				
 	printStr("Created one more test comment msg");					
 	
@@ -242,6 +257,7 @@ function test_get_comment()
 				(event_id, user_id)
 				VALUES 
 				('99983',  '999001');");	
+	/*
 	// Event 99982's comments
 	mysql_query("INSERT INTO tbl_comment
 				(comment_id, create_by, create_at, comment)
@@ -271,7 +287,13 @@ function test_get_comment()
 	mysql_query("INSERT INTO tbl_comment_event 
 				(event_id, comment_id)
 				VALUES 
-				('99983',  '9906'), ('99983',  '9907');");		
+				('99983',  '9906'), ('99983',  '9907');");	*/	
+	
+	create_comment_detail($_SESSION["db_conn"], 'Comment message 9903', '999001', '99982');	
+	create_comment_detail($_SESSION["db_conn"], 'Comment message 9904', '999002', '99982');	
+	create_comment_detail($_SESSION["db_conn"], 'Comment message 9905', '999001', '99982');	
+	create_comment_detail($_SESSION["db_conn"], 'Comment message 9906', '999003', '99983');	
+	create_comment_detail($_SESSION["db_conn"], 'Comment message 9907', '999002', '99983');	
 	
 	printStr("Created multiple events and messages by multiple users");					
 	

@@ -1,4 +1,13 @@
 <?php 
+
+function get_device_token_sql($p_user_id)
+{
+	$sql = 'SELECT device_token
+			FROM tbl_event_user
+			WHERE 1=1
+			AND user_id = '.$p_user_id;
+	return $sql;
+}
 function get_option_sql($p_event_id)
 {
 	$sql = 'SELECT tbl_option.option_id, option_name, option_desc
@@ -426,6 +435,31 @@ function get_vote_status_sql($user_id, $p_option_id)
 			FROM tbl_option_user 
 			WHERE user_id = '".$user_id."'
 			AND option_id = '".$p_option_id."'";
+	return $sql;
+}
+function get_user_name_sql($p_user_id)
+{
+	$sql = "SELECT user_name 
+			FROM tbl_user 
+			WHERE user_id = '".$p_user_id."'";
+	return $sql;
+}
+function get_user_id_in_group_has_comment_sql($p_comment_id)
+{
+	$sql = "SELECT tbl_event.event_name, tbl_event_user.user_id
+			FROM tbl_comment_event, tbl_event, tbl_event_user
+			WHERE tbl_comment_event.event_id = tbl_event_user.event_id
+			AND tbl_event.event_id = tbl_event_user.event_id
+			AND comment_id = '".$p_comment_id."'";
+	return $sql;
+}
+function get_user_id_in_group_has_option_sql($p_option_id)
+{
+	$sql = "SELECT tbl_event.event_name, tbl_event_user.user_id
+			FROM tbl_event_option, tbl_event, tbl_event_user
+			WHERE tbl_event.event_id = tbl_event_user.event_id
+			AND tbl_event_option.event_id = tbl_event_user.event_id
+			AND tbl_event_option.option_id = '".$p_option_id."'";
 	return $sql;
 }
 ?>

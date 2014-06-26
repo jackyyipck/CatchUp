@@ -241,6 +241,14 @@ function remove_option_event($db_conn, $option_id)
 function create_vote($db_conn, $user_id, $option_id)
 {
 	//TODO notification
+	//Notification
+	$user_query_result = mysql_query(get_user_id_in_group_has_option_sql($option_id), $db_conn);
+	while($user_query_row = mysql_fetch_assoc($user_query_result))
+	{
+		push_msg($db_conn, $user_query_row["user_id"], 
+					get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": vote updated");
+	}
+	mysql_free_result($user_query_result);
 	return mysql_query(create_vote_sql($option_id, $user_id), $db_conn);
 }
 function remove_vote($db_conn, $user_id, $option_id)
@@ -333,6 +341,17 @@ function create_comments($db_conn, $user_comment, $create_by)
 	if (mysql_query(create_comments_sql($user_comment, $create_by), $db_conn))
 	{
 		$comment_id = mysql_insert_id($db_conn);
+		//Notification
+		echo get_user_id_in_group_has_comment_sql($comment_id)."<br>";
+		$user_query_result = mysql_query(get_user_id_in_group_has_comment_sql($comment_id), $db_conn);
+		echo mysql_num_rows($user_query_result);
+		while($user_query_row = mysql_fetch_assoc($user_query_result))
+		{
+			echo get_user_name($db_conn, $create_by)."<br>";
+			push_msg($db_conn, $user_query_row["user_id"], 
+						get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": ".$user_comment);
+		}
+		mysql_free_result($user_query_result);
 	}
 	return $comment_id;
 }
@@ -392,5 +411,44 @@ function get_vote_status($db_conn, $user_id, $option_id)
 		$return_result = 0;
 	}
 	return $return_result;
+}
+function get_user_name($db_conn, $user_id)
+{
+	$user_name_query_result = mysql_query(get_user_name_sql($user_id), $db_conn);
+	if ($user_name_query_row = mysql_fetch_assoc($user_name_query_result))
+	{
+		$return_result = $user_name_query_row['user_name'];
+	}
+	else
+	{
+		$return_result = 0;
+	}
+	return $return_result;
+}
+function write_log($type, $msg)
+{
+	//Type
+	//0: Notice, 1: Warning, 2: Error
+	if($type >= 0)
+	{
+		date_default_timezone_set("Asia/Hong_Kong"); 
+		file_put_contents("log/log.txt", date("c")."\t".$type."\t".$msg."\n", FILE_APPEND);
+	}
+}
+function get_device_token($db_conn, $user_id)
+{
+	$device_token_query_result = mysql_query(get_device_token_sql($user_id), $db_conn);
+	if($device_token_query_row = mysql_fetch_assoc($device_token_query_result))
+	{
+		$return_result = $device_token_query_row['device_token'];
+	}else
+	{
+		$return_result = 0;
+	}
+	return $return_result;
+}
+function push_msg($db_conn, $user_id, $msg)
+{
+	write_log(0, "TO:".$user_id." CONTENT:".$msg);
 }
 ?>
