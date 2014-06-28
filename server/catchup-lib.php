@@ -238,7 +238,7 @@ function create_vote($db_conn, $user_id, $option_id)
 			if($user_id != $user_query_row["user_id"])
 			{
 				push_msg($db_conn, $user_query_row["user_id"], 
-									get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": vote updated");
+									get_user_name($db_conn, $user_id)." @ ".$user_query_row["event_name"].": vote updated");
 			}
 		}
 		mysql_free_result($user_query_result);

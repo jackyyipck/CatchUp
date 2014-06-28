@@ -19,9 +19,7 @@ test_create_update_delete_event();
 test_empty_event();
 test_multiple_invitee();
 test_option();
-test_one_vote();
-test_vote_by_same_invitee();
-test_vote_by_multiple_invitee();
+test_vote();
 
 // general query 
 test_get_user_by_mobile();
@@ -171,16 +169,6 @@ function test_create_update_delete_event()
 }
 function test_get_comment()
 {
-	/*mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9901',  '999001', '2012-03-04 05:06:11', 'Comment message');");
-				
-	mysql_query("INSERT INTO tbl_comment_event 
-				(event_id, comment_id)
-				VALUES 
-				('99981',  '9901');");
-	*/
 	$comment_user_id = array('999001','999001','999001','999002','999001','999003','999002');
 	$comment_event_id = array('99981','99981','99982','99982','99982','99983','99983');
 	for($i=0; $i<1; $i++)
@@ -251,37 +239,6 @@ function test_get_comment()
 				(event_id, user_id)
 				VALUES 
 				('99983',  '999001');");	
-	/*
-	// Event 99982's comments
-	mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9903',  '999001', '2012-03-04 05:06:12', 'Comment message 9903');");		
-	mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9904',  '999002', '2012-03-04 05:06:13', 'Comment message 9904');");	
-	mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9905',  '999001', '2012-03-04 05:06:15', 'Comment message 9905');");				
-	mysql_query("INSERT INTO tbl_comment_event 
-				(event_id, comment_id)
-				VALUES 
-				('99982',  '9903'), ('99982',  '9904'), ('99982',  '9905');");		
-	// Event 99983's comments
-	mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9906',  '999003', '2012-03-04 05:07:12', 'Comment message 9906');");		
-	mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9907',  '999002', '2012-03-04 05:08:12', 'Comment message 9907');");				
-	mysql_query("INSERT INTO tbl_comment_event 
-				(event_id, comment_id)
-				VALUES 
-				('99983',  '9906'), ('99983',  '9907');");	*/	
 	
 	for($i=3; $i<7; $i++)
 	{
@@ -340,22 +297,6 @@ function test_get_comment()
 						</comment>
 					</event>
 				</response>');
-				/*
-				<response>
-					<event event_id="99981">
-						<comment comment_id="9901" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:11">Comment message</comment>
-						<comment comment_id="9902" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:12">Comment message 2</comment>
-					</event>
-					<event event_id="99982">
-						<comment comment_id="9903" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:12">Comment message 9903</comment>
-						<comment comment_id="9904" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:06:13">Comment message 9904</comment>
-						<comment comment_id="9905" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:15">Comment message 9905</comment>
-					</event>
-					<event event_id="99983">
-						<comment comment_id="9906" commenter="Tester3" create_by="999003" create_at="2012-03-04 05:07:12">Comment message 9906</comment>
-						<comment comment_id="9907" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:08:12">Comment message 9907</comment>
-					</event>
-				</response>*/
 									  
 	myAssert($url, $actual, $expected);	
 	
@@ -679,16 +620,24 @@ function test_option()
 										
 	myAssert($url, $actual, $expected);
 }
-function test_one_vote()
+function test_vote()
 {
 		
-	mysql_query("INSERT INTO tbl_option_user 
+	/*mysql_query("INSERT INTO tbl_option_user 
 				(option_id, user_id, create_at)
 				VALUES 
 				('99881',  '999001', '2013-10-22 00:01:00');");
-	
+	*/
+	create_vote($_SESSION['db_conn'], '999001', '99881');
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT create_at FROM tbl_option_user 
+													WHERE option_id = '99881'
+													AND	user_id = '999001'"));
+	$vote_create_at[0] = $query_result['create_at'];	
+		
 	printStr("Added one vote");
-	
+		
+		
+		
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001");	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
@@ -704,12 +653,12 @@ function test_one_vote()
 												<invitees_name invitees_id="999004">Tester4</invitees_name>
 											</invitees>
 											<options_num>3</options_num>
-											<options option_latest_timestamp="2013-10-22 00:01:00">
+											<options option_latest_timestamp="'.$vote_create_at[0].'">
 												<option option_id="99881">
 													<option_name>Option 1</option_name>
 													<option_desc>Option Desc 1</option_desc>
 													<users>
-														<user_name create_at="2013-10-22 00:01:00" user_id="999001">Tester1</user_name>
+														<user_name create_at="'.$vote_create_at[0].'" user_id="999001">Tester1</user_name>
 													</users>
 												</option>
 												<option option_id="99882">
@@ -755,7 +704,7 @@ function test_one_vote()
 	$url = get_full_url("get-voter-by-option-id.php?option_id=99881");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><option>
-										<voter_name voter_id="999001" create_at="2013-10-22 00:01:00" voter_mobile="852123456001" voter_status="">Tester1</voter_name>
+										<voter_name voter_id="999001" create_at="'.$vote_create_at[0].'" voter_mobile="852123456001" voter_status="">Tester1</voter_name>
 									</option>');
 										
 	myAssert($url, $actual, $expected);
@@ -765,16 +714,20 @@ function test_one_vote()
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><option/>');
 										
 	myAssert($url, $actual, $expected);
-	
-}
-function test_vote_by_same_invitee()
-{
+
+	//test_vote_by_same_invitee()
+
 		
-	mysql_query("INSERT INTO tbl_option_user 
+	/*mysql_query("INSERT INTO tbl_option_user 
 				(option_id, user_id, create_at)
 				VALUES 
 				('99882',  '999001', '2013-10-22 00:02:00');");
-	
+	*/			
+	create_vote($_SESSION['db_conn'], '999001', '99882');
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT create_at FROM tbl_option_user 
+													WHERE option_id = '99882'
+													AND	user_id = '999001'"));
+	$vote_create_at[1] = $query_result['create_at'];
 	printStr("Added one more vote from same invitee");
 	
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001");	
@@ -792,19 +745,19 @@ function test_vote_by_same_invitee()
 												<invitees_name invitees_id="999004">Tester4</invitees_name>
 											</invitees>
 											<options_num>3</options_num>
-											<options option_latest_timestamp="2013-10-22 00:02:00">
+											<options option_latest_timestamp="'.$vote_create_at[1].'">
 												<option option_id="99881">
 													<option_name>Option 1</option_name>
 													<option_desc>Option Desc 1</option_desc>
 													<users>
-														<user_name create_at="2013-10-22 00:01:00" user_id="999001">Tester1</user_name>
+														<user_name create_at="'.$vote_create_at[0].'" user_id="999001">Tester1</user_name>
 													</users>
 												</option>
 												<option option_id="99882">
 													<option_name>Option 2</option_name>
 													<option_desc>Option Desc 2</option_desc>
 													<users>
-														<user_name create_at="2013-10-22 00:02:00" user_id="999001">Tester1</user_name>
+														<user_name create_at="'.$vote_create_at[1].'" user_id="999001">Tester1</user_name>
 													</users>
 												</option>
 												<option option_id="99883">
@@ -839,14 +792,27 @@ function test_vote_by_same_invitee()
 									</response>');
 										
 	myAssert($url, $actual, $expected);
-}
-function test_vote_by_multiple_invitee()
-{
+	
+	
+	// test_vote_by_multiple_invitee()
+
 		
-	mysql_query("INSERT INTO tbl_option_user 
+	/*mysql_query("INSERT INTO tbl_option_user 
 				(option_id, user_id, create_at)
 				VALUES 
 				('99882',  '999002', '2013-10-22 00:03:00'), ('99883',  '999004', '2013-10-22 00:04:00');");
+	*/
+	create_vote($_SESSION['db_conn'], '999002', '99882');
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT create_at FROM tbl_option_user 
+													WHERE option_id = '99882'
+													AND	user_id = '999002'"));
+	$vote_create_at[2] = $query_result['create_at'];
+	
+	create_vote($_SESSION['db_conn'], '999004', '99883');
+	$query_result = mysql_fetch_assoc(mysql_query("SELECT create_at FROM tbl_option_user 
+													WHERE option_id = '99883'
+													AND	user_id = '999004'"));
+	$vote_create_at[3] = $query_result['create_at'];
 	
 	printStr("Added two more vote from multiple invitee");
 	
@@ -865,27 +831,27 @@ function test_vote_by_multiple_invitee()
 												<invitees_name invitees_id="999004">Tester4</invitees_name>
 											</invitees>
 											<options_num>3</options_num>
-											<options option_latest_timestamp="2013-10-22 00:04:00">
+											<options option_latest_timestamp="'.$vote_create_at[3].'">
 												<option option_id="99881">
 													<option_name>Option 1</option_name>
 													<option_desc>Option Desc 1</option_desc>
 													<users>
-														<user_name create_at="2013-10-22 00:01:00" user_id="999001">Tester1</user_name>
+														<user_name create_at="'.$vote_create_at[0].'" user_id="999001">Tester1</user_name>
 													</users>
 												</option>
 												<option option_id="99882">
 													<option_name>Option 2</option_name>
 													<option_desc>Option Desc 2</option_desc>
 													<users>
-														<user_name create_at="2013-10-22 00:02:00" user_id="999001">Tester1</user_name>
-														<user_name create_at="2013-10-22 00:03:00" user_id="999002">Tester2</user_name>
+														<user_name create_at="'.$vote_create_at[1].'" user_id="999001">Tester1</user_name>
+														<user_name create_at="'.$vote_create_at[2].'" user_id="999002">Tester2</user_name>
 													</users>
 												</option>
 												<option option_id="99883">
 													<option_name>Option 3</option_name>
 													<option_desc>Option Desc 3</option_desc>
 													<users>
-														<user_name create_at="2013-10-22 00:04:00" user_id="999004">Tester4</user_name>
+														<user_name create_at="'.$vote_create_at[3].'" user_id="999004">Tester4</user_name>
 													</users>
 												</option>
 											</options>
@@ -916,8 +882,8 @@ function test_vote_by_multiple_invitee()
 	$url = get_full_url("get-voter-by-option-id.php?option_id=99882");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><option>
-										<voter_name voter_id="999001" create_at="2013-10-22 00:02:00" voter_mobile="852123456001" voter_status="">Tester1</voter_name>
-										<voter_name voter_id="999002" create_at="2013-10-22 00:03:00" voter_mobile="852123456002" voter_status="">Tester2</voter_name>
+										<voter_name voter_id="999001" create_at="'.$vote_create_at[1].'" voter_mobile="852123456001" voter_status="">Tester1</voter_name>
+										<voter_name voter_id="999002" create_at="'.$vote_create_at[2].'" voter_mobile="852123456002" voter_status="">Tester2</voter_name>
 									</option>');
 										
 	myAssert($url, $actual, $expected);
