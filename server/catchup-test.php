@@ -52,8 +52,6 @@ function test_create_update_delete_event()
 	$option_id1 = $query_result['option_id'];
 	$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name2."'"));
 	$option_id2 = $query_result['option_id'];
-	$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = 'Not joining'"));
-	$option_idNJ = $query_result['option_id'];
 	if($event_id != 0)
 	{
 		printStr("Creating event using form");
@@ -71,7 +69,7 @@ function test_create_update_delete_event()
 													<invitees_name invitees_id="999005">Tester5</invitees_name>
 													<invitees_name invitees_id="999007">Tester7</invitees_name>
 												</invitees>
-												<options_num>3</options_num>
+												<options_num>2</options_num>
 												<options option_latest_timestamp="">
 													<option option_id="'.$option_id1.'">
 														<option_name>'.$option_name1.'</option_name><option_desc/>
@@ -79,10 +77,6 @@ function test_create_update_delete_event()
 													</option>
 													<option option_id="'.$option_id2.'">
 														<option_name>'.$option_name2.'</option_name><option_desc/>
-														<users/>
-													</option>
-													<option option_id="'.$option_idNJ.'">
-														<option_name>Not joining</option_name><option_desc/>
 														<users/>
 													</option>
 												</options>
@@ -126,7 +120,7 @@ function test_create_update_delete_event()
 													<invitees_name invitees_id="999006">Tester6</invitees_name>
 													<invitees_name invitees_id="999008">Tester8</invitees_name>
 												</invitees>
-												<options_num>4</options_num>
+												<options_num>2</options_num>
 												<options option_latest_timestamp="">
 													<option option_id="'.$option_id1.'">
 														<option_name>'.$option_name1.'</option_name><option_desc/>
@@ -134,10 +128,6 @@ function test_create_update_delete_event()
 													</option>
 													<option option_id="'.$option_id3.'">
 														<option_name>'.$option_name3.'</option_name><option_desc/>
-														<users/>
-													</option>
-													<option option_id="'.$option_idNJ.'">
-														<option_name>Not joining</option_name><option_desc/>
 														<users/>
 													</option>
 												</options>
@@ -191,66 +181,61 @@ function test_get_comment()
 				VALUES 
 				('99981',  '9901');");
 	*/
-	$comment1 = 'Comment message '.time();
-	create_comment_detail($_SESSION["db_conn"], $comment1, '999001', '99981');		
-	$query_result = mysql_fetch_assoc(mysql_query("SELECT comment_id, create_at FROM tbl_comment WHERE comment = '".$comment1."'"));
-	$comment1_create_at = $query_result['create_at'];
-	$comment1_id = $query_result['comment_id'];
+	$comment_user_id = array('999001','999001','999001','999002','999001','999003','999002');
+	$comment_event_id = array('99981','99981','99982','99982','99982','99983','99983');
+	for($i=0; $i<1; $i++)
+	{
+		$comment[$i] = 'Comment message '.time().$i;
+		create_comment_detail($_SESSION["db_conn"], $comment[$i], $comment_user_id[$i], $comment_event_id[$i]);	
+		$query_result = mysql_fetch_assoc(mysql_query("SELECT comment_id, create_at FROM tbl_comment WHERE comment = '".$comment[$i]."'"));
+		$comment_create_at[$i] = $query_result['create_at'];
+		$comment_id[$i] = $query_result['comment_id'];		
+	}
 	
 	printStr("Created one test comment msg");
 	
 	$url = get_full_url("get-comment-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
-										<comment comment_id="'.$comment1_id.'">
-											<comment_string>'.$comment1.'</comment_string>
-											<commenter create_by="999001" create_at="'.$comment1_create_at.'">Tester1</commenter>
+										<comment comment_id="'.$comment_id[0].'">
+											<comment_string>'.$comment[0].'</comment_string>
+											<commenter create_by="999001" create_at="'.$comment_create_at[0].'">Tester1</commenter>
 										</comment>
 									  </response>');
 									
 	myAssert($url, $actual, $expected);
-	
-	
-	/*
-	mysql_query("INSERT INTO tbl_comment
-				(comment_id, create_by, create_at, comment)
-				VALUES 
-				('9902',  '999001', '2012-03-04 05:06:12', 'Comment message 2');");
-				
-	mysql_query("INSERT INTO tbl_comment_event 
-				(event_id, comment_id)
-				VALUES 
-				('99981',  '9902');");		
-	*/
-	$comment2 = 'Comment message '.time();
-	create_comment_detail($_SESSION["db_conn"], $comment2, '999001', '99981');
-	$query_result = mysql_fetch_assoc(mysql_query("SELECT comment_id, create_at FROM tbl_comment WHERE comment = '".$comment2."'"));
-	$comment2_create_at = $query_result['create_at'];
-	$comment2_id = $query_result['comment_id'];
-				
+
+	for($i=1; $i<3; $i++)
+	{
+		$comment[$i] = 'Comment message '.time().$i;
+		create_comment_detail($_SESSION["db_conn"], $comment[$i], $comment_user_id[$i], $comment_event_id[$i]);	
+		$query_result = mysql_fetch_assoc(mysql_query("SELECT comment_id, create_at FROM tbl_comment WHERE comment = '".$comment[$i]."'"));
+		$comment_create_at[$i] = $query_result['create_at'];
+		$comment_id[$i] = $query_result['comment_id'];		
+	}
 	printStr("Created one more test comment msg");					
 	
 	$url = get_full_url("get-comment-by-event-id.php?event_id=99981");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
-										<comment comment_id="'.$comment1_id.'">
-											<comment_string>'.$comment1.'</comment_string>
-											<commenter create_by="999001" create_at="'.$comment1_create_at.'">Tester1</commenter>
+										<comment comment_id="'.$comment_id[0].'">
+											<comment_string>'.$comment[0].'</comment_string>
+											<commenter create_by="999001" create_at="'.$comment_create_at[0].'">Tester1</commenter>
 										</comment>
-										<comment comment_id="'.$comment2_id.'">
-											<comment_string>'.$comment2.'</comment_string>
-											<commenter create_by="999001" create_at="'.$comment2_create_at.'">Tester1</commenter>
+										<comment comment_id="'.$comment_id[1].'">
+											<comment_string>'.$comment[1].'</comment_string>
+											<commenter create_by="999001" create_at="'.$comment_create_at[1].'">Tester1</commenter>
 										</comment>
 									  </response>');
 									  
 	myAssert($url, $actual, $expected);	
 	
-	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&last_comment_id=".$comment1_id);
+	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&last_comment_id=".$comment_id[0]);
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
-										<comment comment_id="'.$comment2_id.'">
-											<comment_string>'.$comment2.'</comment_string>
-											<commenter create_by="999001" create_at="'.$comment2_create_at.'">Tester1</commenter>
+										<comment comment_id="'.$comment_id[1].'">
+											<comment_string>'.$comment[1].'</comment_string>
+											<commenter create_by="999001" create_at="'.$comment_create_at[1].'">Tester1</commenter>
 										</comment>
 									  </response>');
 									  
@@ -298,17 +283,64 @@ function test_get_comment()
 				VALUES 
 				('99983',  '9906'), ('99983',  '9907');");	*/	
 	
-	create_comment_detail($_SESSION["db_conn"], 'Comment message 9903', '999001', '99982');	
-	create_comment_detail($_SESSION["db_conn"], 'Comment message 9904', '999002', '99982');	
-	create_comment_detail($_SESSION["db_conn"], 'Comment message 9905', '999001', '99982');	
-	create_comment_detail($_SESSION["db_conn"], 'Comment message 9906', '999003', '99983');	
-	create_comment_detail($_SESSION["db_conn"], 'Comment message 9907', '999002', '99983');	
+	for($i=3; $i<7; $i++)
+	{
+		$comment[$i] = 'Comment message '.time().$i;
+		create_comment_detail($_SESSION["db_conn"], $comment[$i], $comment_user_id[$i], $comment_event_id[$i]);	
+		$query_result = mysql_fetch_assoc(mysql_query("SELECT comment_id, create_at FROM tbl_comment WHERE comment = '".$comment[$i]."'"));
+		$comment_create_at[$i] = $query_result['create_at'];
+		$comment_id[$i] = $query_result['comment_id'];		
+	}
 	
 	printStr("Created multiple events and messages by multiple users");					
 	
 	$url = get_full_url("get-comment-by-user-id.php?user_id=999001");
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
+				<response>
+					<event event_id="99981">
+						<comment comment_id="'.$comment_id[0].'"
+												 create_at="'.$comment_create_at[0].'"
+												 create_by="999001"
+												 commenter="Tester1">'.$comment[0].'
+						</comment>
+						<comment comment_id="'.$comment_id[1].'"
+												 create_at="'.$comment_create_at[1].'"
+												 create_by="999001"
+												 commenter="Tester1">'.$comment[1].'
+						</comment>
+					</event>
+					<event event_id="99982">
+						<comment comment_id="'.$comment_id[2].'"
+												 create_at="'.$comment_create_at[2].'"
+												 create_by="999001"
+												 commenter="Tester1">'.$comment[2].'
+						</comment>
+						<comment comment_id="'.$comment_id[3].'"
+												 create_at="'.$comment_create_at[3].'"
+												 create_by="999002"
+												 commenter="Tester2">'.$comment[3].'
+						</comment>
+						<comment comment_id="'.$comment_id[4].'"
+												 create_at="'.$comment_create_at[4].'"
+												 create_by="999001"
+												 commenter="Tester1">'.$comment[4].'
+						</comment>
+					</event>
+					<event event_id="99983">
+						<comment comment_id="'.$comment_id[5].'"
+												 create_at="'.$comment_create_at[5].'"
+												 create_by="999003"
+												 commenter="Tester3">'.$comment[5].'
+						</comment>
+						<comment comment_id="'.$comment_id[6].'"
+												 create_at="'.$comment_create_at[6].'"
+												 create_by="999002"
+												 commenter="Tester2">'.$comment[6].'
+						</comment>
+					</event>
+				</response>');
+				/*
 				<response>
 					<event event_id="99981">
 						<comment comment_id="9901" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:11">Comment message</comment>
@@ -323,22 +355,38 @@ function test_get_comment()
 						<comment comment_id="9906" commenter="Tester3" create_by="999003" create_at="2012-03-04 05:07:12">Comment message 9906</comment>
 						<comment comment_id="9907" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:08:12">Comment message 9907</comment>
 					</event>
-				</response>');
+				</response>*/
 									  
 	myAssert($url, $actual, $expected);	
 	
-	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&last_comment_id=9903");
+	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&last_comment_id=".$comment_id[2]);
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
 					<response>
 						<event event_id="99982">
-							<comment comment_id="9904" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:06:13">Comment message 9904</comment>
-							<comment comment_id="9905" commenter="Tester1" create_by="999001" create_at="2012-03-04 05:06:15">Comment message 9905</comment>
-						</event>
-						<event event_id="99983">
-							<comment comment_id="9906" commenter="Tester3" create_by="999003" create_at="2012-03-04 05:07:12">Comment message 9906</comment>
-							<comment comment_id="9907" commenter="Tester2" create_by="999002" create_at="2012-03-04 05:08:12">Comment message 9907</comment>
-						</event>
+						<comment comment_id="'.$comment_id[3].'"
+												 create_at="'.$comment_create_at[3].'"
+												 create_by="999002"
+												 commenter="Tester2">'.$comment[3].'
+						</comment>
+						<comment comment_id="'.$comment_id[4].'"
+												 create_at="'.$comment_create_at[4].'"
+												 create_by="999001"
+												 commenter="Tester1">'.$comment[4].'
+						</comment>
+					</event>
+					<event event_id="99983">
+						<comment comment_id="'.$comment_id[5].'"
+												 create_at="'.$comment_create_at[5].'"
+												 create_by="999003"
+												 commenter="Tester3">'.$comment[5].'
+						</comment>
+						<comment comment_id="'.$comment_id[6].'"
+												 create_at="'.$comment_create_at[6].'"
+												 create_by="999002"
+												 commenter="Tester2">'.$comment[6].'
+						</comment>
+					</event>
 					</response>');
 									  
 	myAssert($url, $actual, $expected);	

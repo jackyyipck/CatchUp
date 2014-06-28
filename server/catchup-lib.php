@@ -101,19 +101,6 @@ function create_or_update_event_detail($db_conn,
 	}
 	if ($event_id > 0)
 	{
-		// Check if there exists "Not joining" option, append one if not
-		$has_not_joining_option = false;
-		for($i = 0; $i<count($arr_option_id); $i++)
-		{
-			if($arr_option_name[$i] == "Not joining"){
-				$has_not_joining_option = true;
-				break;
-			}
-		}
-		if(!$has_not_joining_option){
-			$arr_option_name[] = "Not joining";
-			$arr_option_id [] = "";
-		}
 		for($i = 0; $i<count($arr_option_id); $i++)
 		{
 			//loop through all options
@@ -240,16 +227,27 @@ function remove_option_event($db_conn, $option_id)
 }
 function create_vote($db_conn, $user_id, $option_id)
 {
-	//TODO notification
-	//Notification
-	$user_query_result = mysql_query(get_user_id_in_group_has_option_sql($option_id), $db_conn);
-	while($user_query_row = mysql_fetch_assoc($user_query_result))
+
+	$result = true;
+	if(mysql_query(create_vote_sql($option_id, $user_id), $db_conn))
 	{
-		push_msg($db_conn, $user_query_row["user_id"], 
-					get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": vote updated");
+		//Notification
+		$user_query_result = mysql_query(get_user_id_in_group_has_option_sql($option_id), $db_conn);
+		while($user_query_row = mysql_fetch_assoc($user_query_result))
+		{
+			if($user_id != $user_query_row["user_id"])
+			{
+				push_msg($db_conn, $user_query_row["user_id"], 
+									get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": vote updated");
+			}
+		}
+		mysql_free_result($user_query_result);
 	}
-	mysql_free_result($user_query_result);
-	return mysql_query(create_vote_sql($option_id, $user_id), $db_conn);
+	else
+	{
+		$result = false;
+	}
+	return $result;
 }
 function remove_vote($db_conn, $user_id, $option_id)
 {
