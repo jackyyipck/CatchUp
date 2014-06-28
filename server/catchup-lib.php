@@ -336,22 +336,10 @@ function get_verify_state_mobile($db_conn, $user_mobile)
 }
 function create_comments($db_conn, $user_comment, $create_by)
 {
-	//TODO notification
 	$comment_id = 0;
 	if (mysql_query(create_comments_sql($user_comment, $create_by), $db_conn))
 	{
 		$comment_id = mysql_insert_id($db_conn);
-		//Notification
-		echo get_user_id_in_group_has_comment_sql($comment_id)."<br>";
-		$user_query_result = mysql_query(get_user_id_in_group_has_comment_sql($comment_id), $db_conn);
-		echo mysql_num_rows($user_query_result);
-		while($user_query_row = mysql_fetch_assoc($user_query_result))
-		{
-			echo get_user_name($db_conn, $create_by)."<br>";
-			push_msg($db_conn, $user_query_row["user_id"], 
-						get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": ".$user_comment);
-		}
-		mysql_free_result($user_query_result);
 	}
 	return $comment_id;
 }
@@ -373,6 +361,17 @@ function create_comment_detail($db_conn, $user_comment, $create_by, $event_id)
 	if ($comment_id > 0)
 	{	
 		create_comment_event_pair($db_conn, $comment_id, $event_id);
+		//Notification
+		$user_query_result = mysql_query(get_user_id_in_group_has_comment_sql($comment_id));
+		while($user_query_row = mysql_fetch_assoc($user_query_result))
+		{
+			if($user_query_row["user_id"] != $create_by)
+			{
+				push_msg($db_conn, $user_query_row["user_id"], 
+						get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": ".$user_comment);
+			}
+		}
+		mysql_free_result($user_query_result);
 	}
 	return $event_id;
 }
