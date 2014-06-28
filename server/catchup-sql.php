@@ -3,7 +3,7 @@
 function get_device_token_sql($p_user_id)
 {
 	$sql = 'SELECT device_token
-			FROM tbl_event_user
+			FROM tbl_user
 			WHERE 1=1
 			AND user_id = '.$p_user_id;
 	return $sql;

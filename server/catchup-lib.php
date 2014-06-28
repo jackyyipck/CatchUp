@@ -434,6 +434,7 @@ function write_log($type, $msg)
 }
 function get_device_token($db_conn, $user_id)
 {
+	echo get_device_token_sql($user_id);
 	$device_token_query_result = mysql_query(get_device_token_sql($user_id), $db_conn);
 	if($device_token_query_row = mysql_fetch_assoc($device_token_query_result))
 	{
@@ -446,6 +447,34 @@ function get_device_token($db_conn, $user_id)
 }
 function push_msg($db_conn, $user_id, $msg)
 {
-	write_log(0, "TO:".$user_id." CONTENT:".$msg);
+	if(true)
+	{
+		write_log(0, "TO:".get_device_token($db_conn, $user_id)." CONTENT:".$msg);
+	}
+	else
+	{
+		$tToken = get_device_token($db_conn, $user_id);
+		$tAlert = $msg;
+		$tBody['aps'] = array (
+								'alert' => $tAlert,
+								'badge' => 8,
+								'sound' => 'default',
+								);
+		$tBody ['payload'] = 'APNS Message Handled by LiveCode';
+		$tBody = json_encode ($tBody);
+		$tContext = stream_context_create ();
+		stream_context_set_option ($tContext, 'ssl', 'local_cert', 'CatchUpCertificateKey.pem');
+		stream_context_set_option ($tContext, 'ssl', 'passphrase', 'Lov627er');
+		$tSocket = stream_socket_client ('ssl://gateway.sandbox.push.apple.com:2195', $error, $errstr, 30, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $tContext);
+		if (!$tSocket)
+			write_log(3, "APNS Connection Failed: $error $errstr" . PHP_EOL);
+		$tMsg = chr (0) . chr (0) . chr (32) . pack ('H*', $tToken) . pack ('n', strlen ($tBody)) . $tBody;
+		$tResult = fwrite ($tSocket, $tMsg, strlen ($tMsg));
+		if ($tResult)
+			write_log(0,'Delivered Message to APNS');
+		else
+			write_log(1,'Could not Deliver Message to APNS');
+		fclose ($tSocket);
+	}
 }
 ?>

@@ -335,16 +335,16 @@ function test_get_comment()
 function create_test_user()
 {
 	mysql_query("INSERT INTO tbl_user
-				(user_id, user_name, user_avatar_filename, user_mobile, user_email, user_create_at, has_verified) 
+				(user_id, user_name, user_avatar_filename, user_mobile, user_email, user_create_at, has_verified, device_token) 
 				VALUES 
-				('999001', 'Tester1', 'Avatar1', '852123456001', 'Tester1@test.com', '2012-03-04 05:06:07', 1),
-				('999002', 'Tester2', 'Avatar2', '852123456002', 'Tester2@test.com', '2012-03-04 05:06:08', 1),
-				('999003', 'Tester3', 'Avatar3', '852123456003', 'Tester3@test.com', '2012-03-04 05:06:09', 1),
-				('999004', 'Tester4', 'Avatar4', '852123456004', 'Tester4@test.com', '2012-03-04 05:06:10', 1),
-				('999005', 'Tester5', 'Avatar5', '852123456005', 'Tester5@test.com', '2012-03-04 05:06:11', 0),
-				('999006', 'Tester6', 'Avatar6', '852123456006', 'Tester6@test.com', '2012-03-04 05:06:12', 1),
-				('999007', 'Tester7', 'Avatar7', '852123456007', 'Tester7@test.com', '2012-03-04 05:06:13', 0),
-				('999008', 'Tester8', 'Avatar8', '852123456008', 'Tester8@test.com', '2012-03-04 05:06:14', 1);");
+				('999001', 'Tester1', 'Avatar1', '852123456001', 'Tester1@test.com', '2012-03-04 05:06:07', 1, 'devicetoken001'),
+				('999002', 'Tester2', 'Avatar2', '852123456002', 'Tester2@test.com', '2012-03-04 05:06:08', 1, 'devicetoken002'),
+				('999003', 'Tester3', 'Avatar3', '852123456003', 'Tester3@test.com', '2012-03-04 05:06:09', 1, 'devicetoken003'),
+				('999004', 'Tester4', 'Avatar4', '852123456004', 'Tester4@test.com', '2012-03-04 05:06:10', 1, 'devicetoken004'),
+				('999005', 'Tester5', 'Avatar5', '852123456005', 'Tester5@test.com', '2012-03-04 05:06:11', 0, 'devicetoken005'),
+				('999006', 'Tester6', 'Avatar6', '852123456006', 'Tester6@test.com', '2012-03-04 05:06:12', 1, 'devicetoken006'),
+				('999007', 'Tester7', 'Avatar7', '852123456007', 'Tester7@test.com', '2012-03-04 05:06:13', 0, 'devicetoken007'),
+				('999008', 'Tester8', 'Avatar8', '852123456008', 'Tester8@test.com', '2012-03-04 05:06:14', 1, 'devicetoken008');");
 }
 function test_create_and_verify_user()
 {

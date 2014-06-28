@@ -1,42 +1,36 @@
-2014-06-29T03:37:09+08:00	0	TO:999002 CONTENT:0 @ TestEvent1: vote updated
-2014-06-29T03:37:09+08:00	0	TO:999004 CONTENT:0 @ TestEvent1: vote updated
-2014-06-29T03:37:29+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039842490
-2014-06-29T03:37:29+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039842490
-2014-06-29T03:37:31+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039842511
-2014-06-29T03:37:31+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039842511
-2014-06-29T03:39:17+08:00	0	TO:999002 CONTENT:0 @ TestEvent1: vote updated
-2014-06-29T03:39:17+08:00	0	TO:999004 CONTENT:0 @ TestEvent1: vote updated
-2014-06-29T03:39:37+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039843770
-2014-06-29T03:39:37+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039843770
-2014-06-29T03:39:38+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039843781
-2014-06-29T03:39:38+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039843781
-2014-06-29T03:41:11+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:41:11+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:41:32+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039844910
-2014-06-29T03:41:32+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039844910
-2014-06-29T03:41:33+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039844931
-2014-06-29T03:41:33+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039844931
-2014-06-29T03:47:47+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:47:47+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:47:53+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:47:53+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:47:56+08:00	0	TO:999001 CONTENT:Tester2 @ TestEvent1: vote updated
-2014-06-29T03:47:56+08:00	0	TO:999004 CONTENT:Tester2 @ TestEvent1: vote updated
-2014-06-29T03:47:56+08:00	0	TO:999001 CONTENT:Tester4 @ TestEvent1: vote updated
-2014-06-29T03:47:56+08:00	0	TO:999002 CONTENT:Tester4 @ TestEvent1: vote updated
-2014-06-29T03:48:08+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039848880
-2014-06-29T03:48:08+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039848880
-2014-06-29T03:48:09+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039848891
-2014-06-29T03:48:09+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039848891
-2014-06-29T03:49:52+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:49:52+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:49:57+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:49:57+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: vote updated
-2014-06-29T03:50:00+08:00	0	TO:999001 CONTENT:Tester2 @ TestEvent1: vote updated
-2014-06-29T03:50:00+08:00	0	TO:999004 CONTENT:Tester2 @ TestEvent1: vote updated
-2014-06-29T03:50:00+08:00	0	TO:999001 CONTENT:Tester4 @ TestEvent1: vote updated
-2014-06-29T03:50:00+08:00	0	TO:999002 CONTENT:Tester4 @ TestEvent1: vote updated
-2014-06-29T03:50:12+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039850120
-2014-06-29T03:50:12+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039850120
-2014-06-29T03:50:13+08:00	0	TO:999002 CONTENT:Tester1 @ TestEvent1: Comment message 14039850131
-2014-06-29T03:50:13+08:00	0	TO:999004 CONTENT:Tester1 @ TestEvent1: Comment message 14039850131
+2014-06-29T03:53:04+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:53:04+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:53:09+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:53:09+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:53:12+08:00	0	TO:0 CONTENT:Tester2 @ TestEvent1: vote updated
+2014-06-29T03:53:12+08:00	0	TO:0 CONTENT:Tester2 @ TestEvent1: vote updated
+2014-06-29T03:53:12+08:00	0	TO:0 CONTENT:Tester4 @ TestEvent1: vote updated
+2014-06-29T03:53:12+08:00	0	TO:0 CONTENT:Tester4 @ TestEvent1: vote updated
+2014-06-29T03:53:24+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039852040
+2014-06-29T03:53:24+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039852040
+2014-06-29T03:53:25+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039852051
+2014-06-29T03:53:25+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039852051
+2014-06-29T03:55:08+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:55:08+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:55:14+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:55:14+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:55:17+08:00	0	TO:0 CONTENT:Tester2 @ TestEvent1: vote updated
+2014-06-29T03:55:17+08:00	0	TO:0 CONTENT:Tester2 @ TestEvent1: vote updated
+2014-06-29T03:55:17+08:00	0	TO:0 CONTENT:Tester4 @ TestEvent1: vote updated
+2014-06-29T03:55:17+08:00	0	TO:0 CONTENT:Tester4 @ TestEvent1: vote updated
+2014-06-29T03:55:29+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039853290
+2014-06-29T03:55:29+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039853290
+2014-06-29T03:55:30+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039853301
+2014-06-29T03:55:30+08:00	0	TO:0 CONTENT:Tester1 @ TestEvent1: Comment message 14039853301
+2014-06-29T03:56:35+08:00	0	TO:devicetoken002 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:56:35+08:00	0	TO:devicetoken004 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:56:41+08:00	0	TO:devicetoken002 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:56:41+08:00	0	TO:devicetoken004 CONTENT:Tester1 @ TestEvent1: vote updated
+2014-06-29T03:56:44+08:00	0	TO:devicetoken001 CONTENT:Tester2 @ TestEvent1: vote updated
+2014-06-29T03:56:44+08:00	0	TO:devicetoken004 CONTENT:Tester2 @ TestEvent1: vote updated
+2014-06-29T03:56:44+08:00	0	TO:devicetoken001 CONTENT:Tester4 @ TestEvent1: vote updated
+2014-06-29T03:56:44+08:00	0	TO:devicetoken002 CONTENT:Tester4 @ TestEvent1: vote updated
+2014-06-29T03:56:56+08:00	0	TO:devicetoken002 CONTENT:Tester1 @ TestEvent1: Comment message 14039854160
+2014-06-29T03:56:56+08:00	0	TO:devicetoken004 CONTENT:Tester1 @ TestEvent1: Comment message 14039854160
+2014-06-29T03:56:57+08:00	0	TO:devicetoken002 CONTENT:Tester1 @ TestEvent1: Comment message 14039854171
+2014-06-29T03:56:57+08:00	0	TO:devicetoken004 CONTENT:Tester1 @ TestEvent1: Comment message 14039854171
