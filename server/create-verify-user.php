@@ -21,12 +21,12 @@ if($action == "create-verify-code")
 	if(isset($_GET["action"]))
 	{
 		$return_value = create_verify_code($_SESSION["db_conn"],
-								 $_GET["user_mobile"], $_GET["device_id"]);	
+								 $_GET["user_mobile"], $_GET["device_id"], $_GET["device_token"]);
 	}
 	else
 	{
 		$return_value = create_verify_code($_SESSION["db_conn"],
-								 $_POST["user_mobile"], $_POST["device_id"]);
+								 $_POST["user_mobile"], $_POST["device_id"], $_POST["device_token"]);
 	}	
 
 	//mail("jackyyipck@gmail.com", "Catchup! User Registration", "Verification code: ".$verification_code, "From: noreply@seayu.hk");

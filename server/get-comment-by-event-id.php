@@ -15,6 +15,7 @@ else
 {
 	$comment_sql = get_comment_by_event_id_sql($_GET["event_id"], 0);
 }
+
 $comment_query_result = mysql_query($comment_sql);
 
 while($comment_query_row = mysql_fetch_assoc($comment_query_result)) 

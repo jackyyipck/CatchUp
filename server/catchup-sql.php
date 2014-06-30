@@ -272,23 +272,24 @@ function remove_invitee_sql($event_id)
 	$sql = "DELETE FROM tbl_event_user WHERE event_id = ".$event_id;
 	return $sql;
 }
-function create_verify_code_sql($user_mobile, $verification_code, $device_id)
+function create_verify_code_sql($user_mobile, $verification_code, $device_id, $device_token)
 {
 	$sql = "INSERT INTO tbl_user
-			(user_mobile, verification_code, device_id, has_verified) 
+			(user_mobile, verification_code, device_id, device_token, has_verified) 
 			VALUES 
 			(
 				'".$user_mobile."',
 				'".$verification_code."',
 				'".$device_id."',
+				'".$device_token."',
 				0
 			)";
 	return $sql;		
 }
-function reset_verify_code_and_state_sql($p_user_id, $verification_code, $device_id)
+function reset_verify_code_and_state_sql($p_user_id, $verification_code)
 {
 	$sql = "UPDATE tbl_user
-			SET verification_code = '".$verification_code."', device_id = '".$device_id."', has_verified = 0
+			SET verification_code = '".$verification_code."', has_verified = 0
 			WHERE 1=1
 			AND user_id = '".$p_user_id."'";
 	return $sql;		
@@ -442,6 +443,18 @@ function get_user_name_sql($p_user_id)
 	$sql = "SELECT user_name 
 			FROM tbl_user 
 			WHERE user_id = '".$p_user_id."'";
+	return $sql;
+}
+function get_unread_by_event_id_sql($p_event_id, $p_last_comment_id, $p_user_id)
+{
+	$sql = 'SELECT tbl_comment.comment_id, create_by, create_at, comment
+			FROM tbl_comment, tbl_comment_event
+			WHERE 1=1
+			AND tbl_comment.comment_id = tbl_comment_event.comment_id
+			AND tbl_comment_event.event_id = '.$p_event_id.'
+			AND tbl_comment.comment_id > '.$p_last_comment_id.'
+			AND tbl_comment.create_by <> '.$p_user_id.'
+			ORDER BY create_at';
 	return $sql;
 }
 function get_user_id_in_group_has_comment_sql($p_comment_id)

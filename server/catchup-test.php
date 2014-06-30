@@ -358,7 +358,7 @@ function test_create_and_verify_user()
 {
 	printStr("Creating and verifying accounts");
 	
-	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=000000&security_key=".get_security_key());
+	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=000000&device_token=abcdefg&security_key=".get_security_key());
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$actual_user_id = (string) $actual->user_id;
 	$actual_verification_code = (string) $actual->to_be_removed->verification_code;
