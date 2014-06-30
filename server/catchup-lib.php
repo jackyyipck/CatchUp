@@ -1,6 +1,8 @@
 <?php 
 include 'catchup-sql.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
+define("ENABLE_SECURITY_CHECK", false);
+define("ENABLE_PUSH_NOTIFICATION", false);
 
 function init_db()
 {
@@ -14,7 +16,7 @@ function init_db()
 	mysql_select_db('seayu_catchup');
 	mysql_set_charset('utf8');
 	
-	if(false)
+	if(ENABLE_SECURITY_CHECK)
 	{
 		// Enable security check
 		if(isset($_REQUEST['security_key']) or isset($_SESSION['security_key']))
@@ -35,8 +37,8 @@ function init_db()
 function verify_security_pass($db_conn, $security_key)
 {
 
-	//How many historical timestamps to check, in seconds
-	$valid_window = 60; 
+	//Number of historical check windows (by minute)
+	$valid_window = 2; 
 	$current_timestamp = time();
 	$secret_key = "TACHYON";
 	$user_id_query_result = mysql_query(get_verified_user_id(), $db_conn);
@@ -47,7 +49,7 @@ function verify_security_pass($db_conn, $security_key)
 		$device_id = $user_id_query_row['device_id'];
 		for($i=0; $i<$valid_window; $i++)
 		{
-			$enryption_key = date("c",$current_timestamp - $i).$device_id.$secret_key;
+			$enryption_key = date("YmdHi",$current_timestamp - $i).$device_id.$secret_key;
 			$security_valid_passcode = sha1($enryption_key);
 			if(!strcmp($security_valid_passcode, $security_key))
 			{
@@ -303,10 +305,10 @@ function remove_vote($db_conn, $user_id, $option_id)
 {
 	return mysql_query(remove_vote_sql($option_id, $user_id), $db_conn);
 }
-function reset_verify_code_and_state($db_conn, $user_id)
+function reset_verify_code_and_state($db_conn, $user_id, $device_id, $device_token)
 {
 	$verification_code = rand(100000,999999);
-	mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code), $db_conn);
+	mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code, $device_id, $device_token), $db_conn);
 	return array($user_id, $verification_code);
 }
 function enrich_user($db_conn, $user_id, $user_name, $user_avatar_filename, $user_email, $user_status)
@@ -353,7 +355,7 @@ function create_verify_code($db_conn, $user_mobile, $device_id, $device_token)
 		return array($user_id, $verification_code);
 	} else {
 		$user_id = $exist_user_query_row['user_id'];
-		mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code), $db_conn);
+		mysql_query(reset_verify_code_and_state($user_id, $verification_code, $device_id, $device_token), $db_conn);
 		return array($user_id, $verification_code);
 	}
 }
@@ -496,7 +498,7 @@ function get_device_token($db_conn, $user_id)
 }
 function push_msg($db_conn, $user_id, $msg)
 {
-	if(true)
+	if(!ENABLE_PUSH_NOTIFICATION)
 	{
 		write_log(0, "TO:".get_device_token($db_conn, $user_id)." CONTENT:".$msg);
 	}

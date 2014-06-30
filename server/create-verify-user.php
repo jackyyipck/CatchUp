@@ -37,34 +37,30 @@ if($action == "create-verify-code")
 elseif($action == "verify-user")
 {
 	$user_id = '';
-	$input_verfy_code = '';
-	if(isset($_GET["action"]))
-	{
-		$user_id = $_GET["user_id"];
-		$input_verfy_code = $_GET["verification_code"];
-	}
-	else
-	{
-		$user_id = $_POST["user_id"];
-		$input_verfy_code = $_POST["verification_code"];
-	}
+	$input_verify_code = '';
+	$user_id = $_REQUEST["user_id"];
+	$device_id = $_REQUEST["device_id"];
+	$device_token = $_REQUEST["device_token"];
+	$input_verify_code = $_REQUEST["verification_code"];
 	
 	$verify_state_query_result = mysql_query(get_verify_state_sql($user_id), $_SESSION["db_conn"]);
 	if ($verify_state_query_row = mysql_fetch_assoc($verify_state_query_result))
 	{
+		//Found the user ID
 		$has_verified = $verify_state_query_row["has_verified"];
 		$verification_code = $verify_state_query_row["verification_code"];
 		
-		if ($has_verified == 0 && $input_verfy_code == $verification_code)
+		if ($has_verified == 0 && $input_verify_code == $verification_code)
 		{
-			mysql_query(verify_user_sql($user_id, $input_verfy_code), $_SESSION["db_conn"]);
+			mysql_query(verify_user_sql($user_id, $input_verify_code), $_SESSION["db_conn"]);
 			$response_row_node->addChild('verification_status','1');
 		}
 		else
 		{
+			//Something went wrong, reset status and verification code
 			$response_row_node->addChild('verification_status','0');
-			$return_value = reset_verify_code_and_state($_SESSION["db_conn"], $user_id);
-			if ($input_verfy_code != $verification_code)
+			$return_value = reset_verify_code_and_state($_SESSION["db_conn"], $user_id, $device_id, $device_token);
+			if ($input_verify_code != $verification_code)
 			{				
 				$response_row_node->addChild('failure_reason','Verification code does not match, status and code has been reset');				
 			}
@@ -129,7 +125,7 @@ elseif($action == "unlink-user")
 	{
 		$user_id = $_POST["user_id"];
 	}
-	reset_verify_code_and_state($_SESSION["db_conn"], $user_id);
+	reset_verify_code_and_state($_SESSION["db_conn"], $user_id, "", "");
 	$response_row_node->addChild('unlink_status',1);
 }
 elseif($action == "get-verify-state")

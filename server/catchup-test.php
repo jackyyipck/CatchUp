@@ -29,7 +29,7 @@ test_get_comment();
 
 function get_security_key()
 {
-	return sha1(date("c",time()).'deviceid001TACHYON');
+	return sha1(date("YmdHi",time()).'deviceid001TACHYON');
 }
 
 function test_create_update_delete_event()
@@ -358,7 +358,7 @@ function test_create_and_verify_user()
 {
 	printStr("Creating and verifying accounts");
 	
-	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=000000&device_token=abcdefg&security_key=".get_security_key());
+	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=111111&device_token=111111&security_key=".get_security_key());
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$actual_user_id = (string) $actual->user_id;
 	$actual_verification_code = (string) $actual->to_be_removed->verification_code;
@@ -366,7 +366,7 @@ function test_create_and_verify_user()
 	{
 		myAssertPass($url);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=000000&verification_code=000000&device_id=000000&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=000000&verification_code=000000&device_id=111111&device_token=111111&security_key=".get_security_key());
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
 											<verification_status>0</verification_status>
@@ -374,7 +374,7 @@ function test_create_and_verify_user()
 										</response>');
 		myAssert($url, $actual, $expected);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=000000&device_id=000000&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=000000&device_id=111111&device_token=111111&security_key=".get_security_key());
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		if (((string) $actual->verification_status) == 0 && $actual->failure_reason == "Verification code does not match, status and code has been reset")
 		{
@@ -382,14 +382,14 @@ function test_create_and_verify_user()
 			$actual_verification_code = (string) $actual->to_be_removed->verification_code;
 		}
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=".$actual_verification_code."&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=".$actual_verification_code."&device_id=111111&device_token=111111&security_key=".get_security_key());
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response>
 											<verification_status>1</verification_status>
 										</response>');
 		myAssert($url, $actual, $expected);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=".$actual_verification_code."&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&verification_code=".$actual_verification_code."&device_id=111111&device_token=111111&security_key=".get_security_key());
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		if (((string) $actual->verification_status) == 0 && $actual->failure_reason == "Duplicated verification, status and code has been reset")
 		{
@@ -917,25 +917,25 @@ function myAssert($function_name, $actual, $expected)
 {
 	$result = xml_is_equal($actual, $expected);
 	if ($result === true) {
-	   echo '<tr><td colspan="2" bgcolor="99FF99">'.$function_name.': Pass</td></tr>';
+	   echo '<tr><td>'.date("His").'</td><td colspan="2" bgcolor="99FF99">'.$function_name.': Pass</td></tr>';
 	} else {
-	   echo '<tr><td colspan="2" bgcolor="FF9999">'.$function_name.': Fail<br><a href="'.$function_name.'" target="_blank">View Page</a><br>'.$result.'</td></tr>';
-		echo '<tr><td>Actual</td><td>'.htmlentities($actual->asXml()).'</td></tr>';
-		echo '<tr><td>Expected</td><td>'.htmlentities($expected->asXml()).'</td></tr>';
+	   echo '<tr><td>'.date("His").'</td><td colspan="2" bgcolor="FF9999">'.$function_name.': Fail<br><a href="'.$function_name.'" target="_blank">View Page</a><br>'.$result.'</td></tr>';
+		echo '<tr><td/><td>Actual</td><td>'.htmlentities($actual->asXml()).'</td></tr>';
+		echo '<tr><td/><td>Expected</td><td>'.htmlentities($expected->asXml()).'</td></tr>';
 	}
 }
 function myAssertPass($function_name)
 {
-	echo '<tr><td colspan="2" bgcolor="99FF99">'.$function_name.': Pass</td></tr>';	
+	echo '<tr><td>'.date("His").'</td><td colspan="2" bgcolor="99FF99">'.$function_name.': Pass</td></tr>';	
 }
 function myAssertFail($function_name, $actual)
 {
-	echo '<tr><td colspan="2" bgcolor="FF9999">'.$function_name.': Fail</td></tr>';
-	echo '<tr><td>Actual</td><td>'.htmlentities($actual->asXml()).'</td></tr>';
+	echo '<tr><td>'.date("His").'</td><td colspan="2" bgcolor="FF9999">'.$function_name.': Fail</td></tr>';
+	echo '<tr><td/><td>Actual</td><td>'.htmlentities($actual->asXml()).'</td></tr>';
 }
 function printStr($str)
 {
-	echo '<tr><td colspan="2">'.$str.'</td></tr>';
+	echo '<tr><td>'.date("His").'</td><td colspan="2">'.$str.'</td></tr>';
 }
 ?>
 
