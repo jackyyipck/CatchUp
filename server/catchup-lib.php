@@ -14,30 +14,29 @@ function init_db()
 	mysql_select_db('seayu_catchup');
 	mysql_set_charset('utf8');
 	
-	if(true)
+	if(false)
 	{
 		// Enable security check
 		if(isset($_REQUEST['security_key']) or isset($_SESSION['security_key']))
 		{
 			if(!verify_security_pass($_SESSION["db_conn"], isset($_REQUEST['security_key'])?$_REQUEST['security_key']:$_SESSION['security_key']))
 			{
-				echo "Invalid security key (from ".$_SERVER['PHP_SELF'];
-				//header( 'Location: error.php?error_msg=Invalid security key') ;
+				//echo "Invalid security key (from ".$_SERVER['PHP_SELF'].")";
+				header( 'Location: error.php?error_msg=Invalid security key from page '.$_SERVER['PHP_SELF']) ;
 			}
 		}
 		else
 		{
-			echo "Security key not found (from ".$_SERVER['PHP_SELF'];
-			exit;
-			//header( 'Location: error.php?error_msg=Security key not found') ;
+			//echo "Security key not found (from ".$_SERVER['PHP_SELF'].")";
+			header( 'Location: error.php?error_msg=Security key not found from page '.$_SERVER['PHP_SELF']) ;
 		}
 	}
 }
 function verify_security_pass($db_conn, $security_key)
 {
 
-	//How many historical timestamps to check
-	$valid_window = 300; 
+	//How many historical timestamps to check, in seconds
+	$valid_window = 60; 
 	$current_timestamp = time();
 	$secret_key = "TACHYON";
 	$user_id_query_result = mysql_query(get_verified_user_id(), $db_conn);
