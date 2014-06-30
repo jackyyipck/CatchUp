@@ -14,7 +14,7 @@ $event_sql = get_event_sql($_REQUEST["user_id"]);
 $event_list_query_result = mysql_query($event_sql);
 while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	
-	$user_sql = get_user_sql($event_list_query_row['event_id']);
+	$user_sql = get_user_sql_by_event_id($event_list_query_row['event_id']);
 	$user_list_query_result = mysql_query($user_sql);
 		
 	$distinct_respondent_sql = get_distinct_respondent_sql($event_list_query_row['event_id']);

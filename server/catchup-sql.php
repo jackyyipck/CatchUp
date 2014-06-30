@@ -72,7 +72,7 @@ function get_distinct_respondent_sql($p_event_id)
 				)';			
 	return $sql;
 }	
-function get_user_sql($p_event_id)
+function get_user_sql_by_event_id($p_event_id)
 {
 	$sql = 'SELECT tbl_user.user_id, user_name
 			FROM tbl_user, tbl_event_user

@@ -200,7 +200,7 @@ function get_event_detail($db_conn, $event_id)
 	mysql_free_result($event_query_result);
 	
 	//******<invitees>*********	
-	$user_sql = get_user_sql($event_id);
+	$user_sql = get_user_sql_by_event_id($event_id);
 	$user_list_query_result = mysql_query($user_sql);
 	$result['invitees_num'] = mysql_num_rows($user_list_query_result);	
 	

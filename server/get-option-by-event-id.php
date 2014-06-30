@@ -3,8 +3,6 @@ include 'catchup-lib.php';
 init_db();
 header("Content-Type: text/xml; charset=utf-8");
 
-
-
 //XML compilation*****************
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
 
@@ -34,6 +32,7 @@ while($option_query_row = mysql_fetch_assoc($option_query_result))
 	$vote_status_query_result = mysql_query($vote_status_sql);
 	if (mysql_num_rows($vote_status_query_result) <> 0)
 	{
+		//Indicate if the current user has voted the option
 		$option_name_node->addAttribute('vote_status', 1);
 	}
 	else
@@ -45,7 +44,7 @@ while($option_query_row = mysql_fetch_assoc($option_query_result))
 mysql_free_result($option_query_result);
 
 $respondent_sql = get_distinct_respondent_sql($_REQUEST["event_id"]);
-$invitee_sql = get_user_sql($_REQUEST["event_id"]);
+$invitee_sql = get_user_sql_by_event_id($_REQUEST["event_id"]);
 
 $respondent_query_result = mysql_query($respondent_sql);
 $invitee_query_result = mysql_query($invitee_sql);

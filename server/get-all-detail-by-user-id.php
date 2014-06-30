@@ -33,7 +33,7 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	mysql_free_result($invitor_list_query_result);
 		
 	//******<invitees>*********	
-	$user_sql = get_user_sql($event_list_query_row['event_id']);
+	$user_sql = get_user_sql_by_event_id($event_list_query_row['event_id']);
 	$user_list_query_result = mysql_query($user_sql);
 	$event_node->addChild('event_invitees',mysql_num_rows($user_list_query_result));	
 	
