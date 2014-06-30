@@ -1,5 +1,6 @@
 <?php 
 include 'catchup-sql.php';
+date_default_timezone_set("Asia/Hong_Kong"); 
 
 function init_db()
 {
@@ -12,6 +13,56 @@ function init_db()
 	}
 	mysql_select_db('seayu_catchup');
 	mysql_set_charset('utf8');
+	
+	if(true)
+	{
+		// Enable security check
+		if(isset($_REQUEST['security_key']) or isset($_SESSION['security_key']))
+		{
+			if(!verify_security_pass($_SESSION["db_conn"], isset($_REQUEST['security_key'])?$_REQUEST['security_key']:$_SESSION['security_key']))
+			{
+				echo "Invalid security key (from ".$_SERVER['PHP_SELF'];
+				//header( 'Location: error.php?error_msg=Invalid security key') ;
+			}
+		}
+		else
+		{
+			echo "Security key not found (from ".$_SERVER['PHP_SELF'];
+			exit;
+			//header( 'Location: error.php?error_msg=Security key not found') ;
+		}
+	}
+}
+function verify_security_pass($db_conn, $security_key)
+{
+
+	//How many historical timestamps to check
+	$valid_window = 3; 
+	$current_timestamp = time();
+	$secret_key = "TACHYON";
+	$user_id_query_result = mysql_query(get_verified_user_id(), $db_conn);
+	$security_status = false;
+	while($user_id_query_row = mysql_fetch_assoc($user_id_query_result))
+	{
+		$user_id = $user_id_query_row['user_id'];
+		$device_id = $user_id_query_row['device_id'];
+		for($i=0; $i<$valid_window; $i++)
+		{
+			$enryption_key = date("c",$current_timestamp - $i).$device_id.$secret_key;
+			$security_valid_passcode = sha1($enryption_key);
+			if(!strcmp($security_valid_passcode, $security_key))
+			{
+				$security_status = true;
+				break;
+			}
+		}
+		if($security_status)
+		{
+			break;
+		}
+	}
+	mysql_free_result($user_id_query_result);
+	return $security_status;
 }
 function create_event_detail($db_conn, 
 							$event_name, 
@@ -428,13 +479,12 @@ function write_log($type, $msg)
 	//0: Notice, 1: Warning, 2: Error
 	if($type >= 0)
 	{
-		date_default_timezone_set("Asia/Hong_Kong"); 
+		
 		file_put_contents("log/log.txt", date("c")."\t".$type."\t".$msg."\n", FILE_APPEND);
 	}
 }
 function get_device_token($db_conn, $user_id)
 {
-	echo get_device_token_sql($user_id);
 	$device_token_query_result = mysql_query(get_device_token_sql($user_id), $db_conn);
 	if($device_token_query_row = mysql_fetch_assoc($device_token_query_result))
 	{

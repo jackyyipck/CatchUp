@@ -462,4 +462,11 @@ function get_user_id_in_group_has_option_sql($p_option_id)
 			AND tbl_event_option.option_id = '".$p_option_id."'";
 	return $sql;
 }
+function get_verified_user_id()
+{
+	$sql = "SELECT user_id, device_id
+			FROM tbl_user
+			WHERE has_verified = 1";
+	return $sql;
+}
 ?>
