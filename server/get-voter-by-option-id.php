@@ -6,7 +6,7 @@ header("Content-Type: text/xml; charset=utf-8");
 //XML compilation*****************
 $option_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><option/>');
 
-$voter_sql = get_voter_sql($_GET['option_id']);
+$voter_sql = get_voter_sql($_REQUEST['option_id']);
 $voter_query_result = mysql_query($voter_sql);
 
 while($voter_query_row = mysql_fetch_assoc($voter_query_result)) 

@@ -4,30 +4,14 @@ init_db();
 header("Content-Type: text/xml; charset=utf-8");
 
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
-$action = "";
-if(isset($_GET["action"]))
-{
-	$action = $_GET["action"];
-}
-else
-{
-	$action = $_POST["action"];
-}
+$action = $_REQUEST["action"];
 
 
 if($action == "create-verify-code")
 {
 	$return_value = "";
-	if(isset($_GET["action"]))
-	{
-		$return_value = create_verify_code($_SESSION["db_conn"],
-								 $_GET["user_mobile"], $_GET["device_id"], $_GET["device_token"]);
-	}
-	else
-	{
-		$return_value = create_verify_code($_SESSION["db_conn"],
-								 $_POST["user_mobile"], $_POST["device_id"], $_POST["device_token"]);
-	}	
+	$return_value = create_verify_code($_SESSION["db_conn"],
+										$_REQUEST["user_mobile"], $_REQUEST["device_id"], $_REQUEST["device_token"]);	
 
 	//mail("jackyyipck@gmail.com", "Catchup! User Registration", "Verification code: ".$verification_code, "From: noreply@seayu.hk");
 	$response_row_node->addChild('user_id', $return_value[0]);
@@ -39,6 +23,7 @@ elseif($action == "verify-user")
 	$user_id = '';
 	$input_verify_code = '';
 	$user_id = $_REQUEST["user_id"];
+	$user_mobile = $_REQUEST["user_mobile"];
 	$device_id = $_REQUEST["device_id"];
 	$device_token = $_REQUEST["device_token"];
 	$input_verify_code = $_REQUEST["verification_code"];
@@ -58,8 +43,6 @@ elseif($action == "verify-user")
 		else
 		{
 			//Something went wrong, reset status and verification code
-			$response_row_node->addChild('verification_status','0');
-			$return_value = reset_verify_code_and_state($_SESSION["db_conn"], $user_id, $device_id, $device_token);
 			if ($input_verify_code != $verification_code)
 			{				
 				$response_row_node->addChild('failure_reason','Verification code does not match, status and code has been reset');				
@@ -69,6 +52,8 @@ elseif($action == "verify-user")
 				$response_row_node->addChild('failure_reason','Duplicated verification, status and code has been reset');
 			}
 			
+			$response_row_node->addChild('verification_status','0');
+			$return_value = create_verify_code($_SESSION["db_conn"],$user_mobile, $device_id, $device_token);		
 			$response_row_node->addChild('user_id', $user_id);
 			$to_be_removed_node = $response_row_node->addChild('to_be_removed');
 			$to_be_removed_node->addChild('verification_code',$return_value[1]);
@@ -83,62 +68,30 @@ elseif($action == "verify-user")
 elseif($action == "enrich-user")
 {
 	$return_value = "";
-	$user_id = '';
-	if(isset($_GET["action"]))
-	{
-		$user_id = $_GET["user_id"];
-	}
-	else
-	{
-		$user_id = $_POST["user_id"];
-	}
-	if(isset($_GET["action"]))
-	{
-		$return_value = enrich_user($_SESSION["db_conn"],
-								 $_GET["user_id"],
-								 $_GET["user_name"],
-								 "notestfile",								 
-								 $_GET["user_email"],
-								 $_GET["user_status"]);
-	}
-	else
+	$user_id = $_REQUEST["user_id"];
+	$target_filename = "";
+	if(isset($_FILES["user_avatar_filename"]["name"]))
 	{
 		$target_filename = "avatars/" . $user_id.time().$_FILES["user_avatar_filename"]["name"];
 		move_uploaded_file($_FILES["user_avatar_filename"]["tmp_name"], $target_filename);
-		$return_value = enrich_user($_SESSION["db_conn"],
-								 $_POST["user_id"],
-								 $_POST["user_name"],
+	}
+	$return_value = enrich_user($_SESSION["db_conn"],
+								 $_REQUEST["user_id"],
+								 $_REQUEST["user_name"],
 								 $target_filename,								 
-								 $_POST["user_email"],
-								 $_POST["user_status"]);		
-	}	
+								 $_REQUEST["user_email"],
+								 $_REQUEST["user_status"]);
 	$response_row_node->addChild('enrichment_status',$return_value);
 }
 elseif($action == "unlink-user")
 {
-	$user_id = '';
-	if(isset($_GET["action"]))
-	{
-		$user_id = $_GET["user_id"];
-	}
-	else
-	{
-		$user_id = $_POST["user_id"];
-	}
-	reset_verify_code_and_state($_SESSION["db_conn"], $user_id, "", "");
+	$user_id = $_REQUEST["user_id"];
+	mysql_query(update_code_and_reset_state_sql($user_id, "", "", ""), $_SESSION["db_conn"]);
 	$response_row_node->addChild('unlink_status',1);
 }
 elseif($action == "get-verify-state")
 {
-	$user_mobile = '';
-		if(isset($_GET["action"]))
-	{
-		$user_mobile = $_GET["user_mobile"];
-	}
-	else
-	{
-		$user_mobile = $_POST["user_mobile"];
-	}
+	$user_mobile = $_REQUEST["user_mobile"];	
 	$return_value = get_verify_state_mobile($_SESSION["db_conn"], $user_mobile);
 	$response_row_node->addChild('verify_state',$return_value);
 }

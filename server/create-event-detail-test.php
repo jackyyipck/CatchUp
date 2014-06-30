@@ -3,9 +3,9 @@ include 'catchup-lib.php';
 
 init_db();
 
-if(isset($_GET['event_id']))
+if(isset($_REQUEST['event_id']))
 {
-	$arr_event_detail = get_event_detail($_SESSION["db_conn"], $_GET['event_id']);
+	$arr_event_detail = get_event_detail($_SESSION["db_conn"], $_REQUEST['event_id']);
 ?>
 	<form action="create-event-detail.php" method="post" enctype="multipart/form-data">
 	<table>

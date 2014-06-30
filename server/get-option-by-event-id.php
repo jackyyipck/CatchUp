@@ -8,10 +8,10 @@ header("Content-Type: text/xml; charset=utf-8");
 //XML compilation*****************
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
 
-$option_sql = get_option_sql($_GET["event_id"]);
+$option_sql = get_option_sql($_REQUEST["event_id"]);
 $option_query_result = mysql_query($option_sql);
 
-$return_value = get_event_detail($_SESSION["db_conn"], $_GET["event_id"]);
+$return_value = get_event_detail($_SESSION["db_conn"], $_REQUEST["event_id"]);
 
 $event_name_node = $response_row_node->addChild('event_name', $return_value['event']['event_name']);
 $event_desc_node = $response_row_node->addChild('event_desc', $return_value['event']['event_desc']);
@@ -30,7 +30,7 @@ while($option_query_row = mysql_fetch_assoc($option_query_result))
 	$option_name_node->addAttribute('voters_num',mysql_num_rows($voter_query_result));
 	mysql_free_result($voter_query_result);	
 	
-	$vote_status_sql = get_vote_status_sql($_GET["user_id"], $option_query_row['option_id']);
+	$vote_status_sql = get_vote_status_sql($_REQUEST["user_id"], $option_query_row['option_id']);
 	$vote_status_query_result = mysql_query($vote_status_sql);
 	if (mysql_num_rows($vote_status_query_result) <> 0)
 	{
@@ -44,8 +44,8 @@ while($option_query_row = mysql_fetch_assoc($option_query_result))
 }
 mysql_free_result($option_query_result);
 
-$respondent_sql = get_distinct_respondent_sql($_GET["event_id"]);
-$invitee_sql = get_user_sql($_GET["event_id"]);
+$respondent_sql = get_distinct_respondent_sql($_REQUEST["event_id"]);
+$invitee_sql = get_user_sql($_REQUEST["event_id"]);
 
 $respondent_query_result = mysql_query($respondent_sql);
 $invitee_query_result = mysql_query($invitee_sql);

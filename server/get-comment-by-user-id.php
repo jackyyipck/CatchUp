@@ -6,15 +6,8 @@ mysql_set_charset('utf8');
 
 //XML compilation*****************
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
-
-if (isset($_GET["last_comment_id"]))
-{
-	$comment_sql = get_comment_after_last_comment_id_sql($_GET["user_id"], $_GET["last_comment_id"]);
-}
-else
-{
-	$comment_sql = get_comment_after_last_comment_id_sql($_GET["user_id"], 0);
-}
+$last_comment_id = isset($_REQUEST["last_comment_id"])?$_REQUEST["last_comment_id"]:0;
+$comment_sql = get_comment_after_last_comment_id_sql($_REQUEST["user_id"], $last_comment_id);
 $comment_query_result = mysql_query($comment_sql);
 $processing_event_id = '';
 

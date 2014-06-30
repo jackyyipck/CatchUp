@@ -7,7 +7,7 @@ mysql_set_charset('utf8');
 //XML compilation*****************
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
 
-$user_sql = get_user_sql($_GET["event_id"]);
+$user_sql = get_user_sql($_REQUEST["event_id"]);
 $user_query_result = mysql_query($user_sql);
 
 while($user_query_row = mysql_fetch_assoc($user_query_result)) 

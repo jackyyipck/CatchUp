@@ -7,7 +7,7 @@ init_db();
 header("Content-Type: text/xml; charset=utf-8");
 
 echo '<response>';
-$p_user_id = $_GET["user_id"];
+$p_user_id = $_REQUEST["user_id"];
 $sql = 'SELECT event_name, event_desc, is_allday
 FROM tbl_event, tbl_event_user
 WHERE 1=1

@@ -8,7 +8,7 @@ header("Content-Type: text/xml; charset=utf-8");
 //XML compilation*****************
 $response_node = new SimpleXMLElement('<response/>');
 
-$rsvp_sql = get_rsvp_sql($_GET['event_id']);
+$rsvp_sql = get_rsvp_sql($_REQUEST['event_id']);
 $rsvp_query_result = mysql_query($rsvp_sql);
 
 while($rsvp_query_row = mysql_fetch_assoc($rsvp_query_result)) 

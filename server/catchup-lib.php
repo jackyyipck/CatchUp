@@ -305,12 +305,6 @@ function remove_vote($db_conn, $user_id, $option_id)
 {
 	return mysql_query(remove_vote_sql($option_id, $user_id), $db_conn);
 }
-function reset_verify_code_and_state($db_conn, $user_id, $device_id, $device_token)
-{
-	$verification_code = rand(100000,999999);
-	mysql_query(reset_verify_code_and_state_sql($user_id, $verification_code, $device_id, $device_token), $db_conn);
-	return array($user_id, $verification_code);
-}
 function enrich_user($db_conn, $user_id, $user_name, $user_avatar_filename, $user_email, $user_status)
 {
 	return mysql_query(update_user_sql($user_id, $user_name, $user_avatar_filename, $user_email, $user_status), $db_conn);
@@ -355,7 +349,7 @@ function create_verify_code($db_conn, $user_mobile, $device_id, $device_token)
 		return array($user_id, $verification_code);
 	} else {
 		$user_id = $exist_user_query_row['user_id'];
-		mysql_query(reset_verify_code_and_state($user_id, $verification_code, $device_id, $device_token), $db_conn);
+		mysql_query(update_code_and_reset_state_sql($user_id, $verification_code, $device_id, $device_token), $db_conn);
 		return array($user_id, $verification_code);
 	}
 }
@@ -528,4 +522,5 @@ function push_msg($db_conn, $user_id, $msg)
 		fclose ($tSocket);
 	}
 }
+
 ?>

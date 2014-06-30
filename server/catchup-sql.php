@@ -286,10 +286,13 @@ function create_verify_code_sql($user_mobile, $verification_code, $device_id, $d
 			)";
 	return $sql;		
 }
-function reset_verify_code_and_state_sql($p_user_id, $verification_code)
+function update_code_and_reset_state_sql($p_user_id, $verification_code, $device_id, $device_token)
 {
 	$sql = "UPDATE tbl_user
-			SET verification_code = '".$verification_code."', has_verified = 0
+			SET verification_code = '".$verification_code."', 
+			device_id = '".$device_id."',
+			device_token = '".$device_token."',
+			has_verified = 0
 			WHERE 1=1
 			AND user_id = '".$p_user_id."'";
 	return $sql;		

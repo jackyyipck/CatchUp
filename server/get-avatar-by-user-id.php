@@ -7,7 +7,7 @@ mysql_set_charset('utf8');
 //XML compilation*****************
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
 
-$avatar_sql = get_userdetails_sql($_GET["user_id"]);
+$avatar_sql = get_userdetails_sql($_REQUEST["user_id"]);
 $avatar_query_result = mysql_query($avatar_sql);
 
 while($avatar_query_row = mysql_fetch_assoc($avatar_query_result)) 

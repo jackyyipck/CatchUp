@@ -5,16 +5,7 @@ header("Content-Type: text/xml; charset=utf-8");
 
 //XML compilation*****************
 $response_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response/>');
-$user_sql = "";
-
-if (isset($_GET["arr_user_mobile"]))
-{
-	$user_sql = get_user_sql_by_user_mobile($_GET["arr_user_mobile"]);
-}
-else
-{
-	$user_sql = get_user_sql_by_user_mobile($_POST["arr_user_mobile"]);
-}
+$user_sql = get_user_sql_by_user_mobile($_REQUEST["arr_user_mobile"]);
 
 $user_query_result = mysql_query($user_sql);
 
