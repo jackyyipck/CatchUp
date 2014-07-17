@@ -72,7 +72,8 @@ elseif($action == "enrich-user")
 	$target_filename = "";
 	if(isset($_FILES["user_avatar_filename"]["name"]))
 	{
-		$target_filename = "avatars/" . $user_id.time().$_FILES["user_avatar_filename"]["name"];
+		//$target_filename = "avatars/" . $user_id.time().$_FILES["user_avatar_filename"]["name"];
+		$target_filename = "avatars/" . $_FILES["user_avatar_filename"]["name"];
 		move_uploaded_file($_FILES["user_avatar_filename"]["tmp_name"], $target_filename);
 	}
 	$return_value = enrich_user($_SESSION["db_conn"],

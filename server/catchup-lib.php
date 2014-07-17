@@ -1,7 +1,7 @@
 <?php 
 include 'catchup-sql.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
-define("ENABLE_SECURITY_CHECK", false);
+define("ENABLE_SECURITY_CHECK", true);
 define("ENABLE_PUSH_NOTIFICATION", false);
 
 function init_db()
@@ -25,12 +25,14 @@ function init_db()
 			{
 				//echo "Invalid security key (from ".$_SERVER['PHP_SELF'].")";
 				header( 'Location: error.php?error_msg=Invalid security key from page '.$_SERVER['PHP_SELF']) ;
+				//header( 'Location: error.php');
 			}
 		}
 		else
 		{
 			//echo "Security key not found (from ".$_SERVER['PHP_SELF'].")";
 			header( 'Location: error.php?error_msg=Security key not found from page '.$_SERVER['PHP_SELF']) ;
+			//header( 'Location: error.php');
 		}
 	}
 }
