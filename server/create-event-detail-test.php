@@ -1,6 +1,6 @@
 <?php
 include 'catchup-lib.php';
-
+$_SESSION['security_key'] = sha1(date("YmdHi",time()).'deviceid001TACHYON')
 init_db();
 
 if(isset($_REQUEST['event_id']))

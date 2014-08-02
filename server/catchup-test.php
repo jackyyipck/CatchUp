@@ -101,10 +101,9 @@
 <?php
 include 'catchup-lib.php';
 include 'xml-lib.php';
-
 set_time_limit(300);
 
-$_SESSION['security_key'] = get_security_key();
+$_SESSION['security_key'] = get_security_key(true);
 init_db();
 
 test_data_cleanup();
@@ -128,9 +127,17 @@ test_create_update_delete_event();
 
 //********
 // Functions used in catchup-test
-function get_security_key()
+function get_security_key($withDeviceId)
 {
-	return sha1(date("YmdHi",time()).'deviceid001TACHYON');
+	if($withDeviceId)
+	{
+		return sha1(date("YmdHi",time()).'deviceid001TACHYON');
+	}
+	else
+	{
+		return sha1(date("YmdHi",time()).'TACHYON');
+	}
+	
 }
 function get_full_url($filename)
 {
@@ -265,7 +272,7 @@ function create_test_event()
 // Event operations
 function test_empty_event()
 {							
-	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key());
+	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
 										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
@@ -285,7 +292,7 @@ function test_empty_event()
 	
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=0&security_key=".get_security_key());
+	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=0&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name>
@@ -298,13 +305,13 @@ function test_empty_event()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-event-by-user-id.php?user_id=999003&security_key=".get_security_key());
+	$url = get_full_url("get-event-by-user-id.php?user_id=999003&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response/>');
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-event-by-user-id.php?user_id=999001&security_key=".get_security_key());
+	$url = get_full_url("get-event-by-user-id.php?user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name>
@@ -314,7 +321,7 @@ function test_empty_event()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<rsvp_name rsvp_id="999001" rsvp_mobile="852123456001" rsvp_status="">Tester1</rsvp_name>
@@ -333,7 +340,7 @@ function test_invitee()
 				
 	printStr("Added 2 more invitee");
 	
-	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key());
+	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));	
 	$expected = new SimpleXMLElement('<events>
 										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
@@ -354,7 +361,7 @@ function test_invitee()
 									
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=0&security_key=".get_security_key());
+	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=0&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name>
@@ -367,7 +374,7 @@ function test_invitee()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<rsvp_name rsvp_id="999001" rsvp_mobile="852123456001" rsvp_status="">Tester1</rsvp_name>
@@ -392,7 +399,7 @@ function test_option()
 	
 	printStr("Added 3 option");
 	
-	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key());	
+	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
 										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
@@ -429,7 +436,7 @@ function test_option()
 									
 	myAssert($url, $actual, $expected);
 	//TODO: why by-event-id requires user-id?
-	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=0&security_key=".get_security_key());
+	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=0&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
@@ -442,7 +449,7 @@ function test_option()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-voter-by-option-id.php?option_id=99881&security_key=".get_security_key());
+	$url = get_full_url("get-voter-by-option-id.php?option_id=99881&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<option/>');
 										
@@ -466,7 +473,7 @@ function test_vote()
 		
 		
 		
-	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key());	
+	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
 										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
@@ -505,7 +512,7 @@ function test_vote()
 									
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=999001&security_key=".get_security_key());
+	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
@@ -520,7 +527,7 @@ function test_vote()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<rsvp_name rsvp_id="999002" rsvp_mobile="852123456002" rsvp_status="">Tester2</rsvp_name>
@@ -529,7 +536,7 @@ function test_vote()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-voter-by-option-id.php?option_id=99881&security_key=".get_security_key());
+	$url = get_full_url("get-voter-by-option-id.php?option_id=99881&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<option>
 										<voter_name voter_id="999001" create_at="'.$vote_create_at[0].'" voter_mobile="852123456001" voter_status="">Tester1</voter_name>
@@ -537,7 +544,7 @@ function test_vote()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-voter-by-option-id.php?option_id=99882&security_key=".get_security_key());
+	$url = get_full_url("get-voter-by-option-id.php?option_id=99882&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<option/>');
 										
@@ -558,7 +565,7 @@ function test_vote()
 	$vote_create_at[1] = $query_result['create_at'];
 	printStr("Added one more vote from same invitee");
 	
-	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key());	
+	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
 										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
@@ -599,7 +606,7 @@ function test_vote()
 									
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=999001&security_key=".get_security_key());
+	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
@@ -612,7 +619,7 @@ function test_vote()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<rsvp_name rsvp_id="999002" rsvp_mobile="852123456002" rsvp_status="">Tester2</rsvp_name>
@@ -644,7 +651,7 @@ function test_vote()
 	
 	printStr("Added two more vote from multiple invitee");
 	
-	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key());	
+	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
 										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
@@ -688,7 +695,7 @@ function test_vote()
 									
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=999004&security_key=".get_security_key());
+	$url = get_full_url("get-option-by-event-id.php?event_id=99981&user_id=999004&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<event_name>TestEvent1</event_name><event_desc>TestEvent1 Description</event_desc>
@@ -701,13 +708,13 @@ function test_vote()
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-rsvp-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response/>');
 										
 	myAssert($url, $actual, $expected);
 	
-	$url = get_full_url("get-voter-by-option-id.php?option_id=99882&security_key=".get_security_key());
+	$url = get_full_url("get-voter-by-option-id.php?option_id=99882&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<option>
 										<voter_name voter_id="999001" create_at="'.$vote_create_at[1].'" voter_mobile="852123456001" voter_status="">Tester1</voter_name>
@@ -731,7 +738,7 @@ function test_comment()
 	
 	printStr("Created one test comment msg");
 	
-	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<comment comment_id="'.$comment_id[0].'">
@@ -752,7 +759,7 @@ function test_comment()
 	}
 	printStr("Created one more test comment msg");					
 	
-	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&security_key=".get_security_key());
+	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<comment comment_id="'.$comment_id[0].'">
@@ -767,7 +774,7 @@ function test_comment()
 									  
 	myAssert($url, $actual, $expected);	
 	
-	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&last_comment_id=".$comment_id[0]."&security_key=".get_security_key());
+	$url = get_full_url("get-comment-by-event-id.php?event_id=99981&last_comment_id=".$comment_id[0]."&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<response>
 										<comment comment_id="'.$comment_id[1].'">
@@ -800,7 +807,7 @@ function test_comment()
 	
 	printStr("Created multiple events and messages by multiple users");					
 	
-	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&security_key=".get_security_key());
+	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement(' 
 				<response>
@@ -849,7 +856,7 @@ function test_comment()
 									  
 	myAssert($url, $actual, $expected);	
 	
-	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&last_comment_id=".$comment_id[2]."&security_key=".get_security_key());
+	$url = get_full_url("get-comment-by-user-id.php?user_id=999001&last_comment_id=".$comment_id[2]."&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement(' 
 					<response>
@@ -885,7 +892,8 @@ function test_create_and_verify_user()
 {
 	printStr("Creating and verifying accounts");
 	
-	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=111111&device_token=111111&security_key=".get_security_key());
+	$url = get_full_url("create-verify-user.php?action=create-verify-code&user_mobile=111111&device_id=111111&device_token=111111&security_key=".get_security_key(false));
+	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$actual_user_id = (string) $actual->user_id;
 	$actual_verification_code = (string) $actual->to_be_removed->verification_code;
@@ -893,7 +901,7 @@ function test_create_and_verify_user()
 	{
 		myAssertPass($url);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=000000&user_mobile=111111&verification_code=000000&device_id=111111&device_token=111111&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=000000&user_mobile=111111&verification_code=000000&device_id=111111&device_token=111111&security_key=".get_security_key(false));
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<response>
 											<verification_status>0</verification_status>
@@ -901,7 +909,7 @@ function test_create_and_verify_user()
 										</response>');
 		myAssert($url, $actual, $expected);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&user_mobile=111111&verification_code=000000&device_id=111111&device_token=111111&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&user_mobile=111111&verification_code=000000&device_id=111111&device_token=111111&security_key=".get_security_key(false));
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		if (((string) $actual->verification_status) == 0 && $actual->failure_reason == "Verification code does not match, status and code has been reset")
 		{
@@ -909,28 +917,28 @@ function test_create_and_verify_user()
 			$actual_verification_code = (string) $actual->to_be_removed->verification_code;
 		}
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&user_mobile=111111&verification_code=".$actual_verification_code."&device_id=111111&device_token=111111&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&user_mobile=111111&verification_code=".$actual_verification_code."&device_id=111111&device_token=111111&security_key=".get_security_key(false));
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<response>
 											<verification_status>1</verification_status>
 										</response>');
 		myAssert($url, $actual, $expected);
 		
-		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&user_mobile=111111&verification_code=".$actual_verification_code."&device_id=111111&device_token=111111&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=verify-user&user_id=".$actual_user_id."&user_mobile=111111&verification_code=".$actual_verification_code."&device_id=111111&device_token=111111&security_key=".get_security_key(false));
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		if (((string) $actual->verification_status) == 0 && $actual->failure_reason == "Duplicated verification, status and code has been reset")
 		{
 			myAssertPass($url);
 		}
 		
-		$url = get_full_url("create-verify-user.php?action=enrich-user&user_id=".$actual_user_id."&user_mobile=111111&user_name=AAA&user_email=abc&user_avatar_filename=abc&user_status=1&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=enrich-user&user_id=".$actual_user_id."&user_mobile=111111&user_name=AAA&user_email=abc&user_avatar_filename=abc&user_status=1&security_key=".get_security_key(false));
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<response>
 											<enrichment_status>1</enrichment_status>
 										</response>');
 		myAssert($url, $actual, $expected);
 		
-		$url = get_full_url("create-verify-user.php?action=unlink-user&user_id=".$actual_user_id."&security_key=".get_security_key());
+		$url = get_full_url("create-verify-user.php?action=unlink-user&user_id=".$actual_user_id."&security_key=".get_security_key(false));
 		$actual = new SimpleXMLElement (file_get_contents($url));
 		$expected = new SimpleXMLElement('<response>
 											<unlink_status>1</unlink_status>
@@ -948,7 +956,7 @@ function test_get_user_by_mobile()
 {
 	printStr("Created user mobile session variables");
 				
-	$url = get_full_url("get-user-id-by-user-mobile.php?arr_user_mobile[]=852123456001&arr_user_mobile[]=852123456004&arr_user_mobile[]=000000000000&arr_user_mobile[]=852123456005&security_key=".get_security_key());
+	$url = get_full_url("get-user-id-by-user-mobile.php?arr_user_mobile[]=852123456001&arr_user_mobile[]=852123456004&arr_user_mobile[]=000000000000&arr_user_mobile[]=852123456005&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	
 	$expected = new SimpleXMLElement('<response>
@@ -973,7 +981,7 @@ function test_create_update_delete_event()
 	$option_name2 = "O2".time();
 	$url .= "option_id[]=&option_name[]=".$option_name1."&";
 	$url .= "option_id[]=&option_name[]=".$option_name2."&";
-	$url .= "security_key=".get_security_key();
+	$url .= "security_key=".get_security_key(true);
 	file_get_contents($url);
 	$query_result = mysql_fetch_assoc(mysql_query("SELECT event_id FROM tbl_event WHERE event_name = '".$event_name."'"));
 	$event_id = $query_result['event_id'];
@@ -987,7 +995,7 @@ function test_create_update_delete_event()
 	if($event_id != 0)
 	{		
 		myAssertPass($url);		
-		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999005&security_key=".get_security_key());
+		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999005&security_key=".get_security_key(true));
 		$actual = new SimpleXMLElement (file_get_contents($url));	
 		$expected = new SimpleXMLElement('<events>
 											<event event_id="'.$event_id.'" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-22 00:00:11" event_expire_at="2013-10-22 00:00:22" is_allday="0">
@@ -1034,12 +1042,12 @@ function test_create_update_delete_event()
 		$url .= "option_id[]=".$option_id1."&option_name[]=".$option_name1."&";
 		$url .= "option_id[]=".$option_id2."&option_name[]=&";
 		$url .= "option_id[]=&option_name[]=".$option_name3."&";
-		$url .= "&security_key=".get_security_key();
+		$url .= "&security_key=".get_security_key(true);
 		file_get_contents($url);
 		$query_result = mysql_fetch_assoc(mysql_query("SELECT option_id FROM tbl_option WHERE option_name = '".$option_name3	."'"));
 		$option_id3 = $query_result['option_id'];
 		
-		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006&security_key=".get_security_key());
+		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006&security_key=".get_security_key(true));
 		$actual = new SimpleXMLElement (file_get_contents($url));	
 		$expected = new SimpleXMLElement('<events>
 											<event event_id="'.$event_id.'" event_create_at="2013-10-22 00:01:00" event_start_at="2013-10-22 00:01:11" event_expire_at="2013-10-22 00:01:22" is_allday="0">
@@ -1073,10 +1081,10 @@ function test_create_update_delete_event()
 		$url = get_full_url("create-event-detail.php?");
 		$url .= "action=delete&";
 		$url .= "event_id=".$event_id."&";
-		$url .= "&security_key=".get_security_key();
+		$url .= "&security_key=".get_security_key(true);
 		file_get_contents($url);
 		
-		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006&security_key=".get_security_key());
+		$url = get_full_url("get-all-detail-by-user-id.php?user_id=999006&security_key=".get_security_key(true));
 		$actual = new SimpleXMLElement (file_get_contents($url));	
 		$expected = new SimpleXMLElement('<events/>');		
 		myAssert($url, $actual, $expected);

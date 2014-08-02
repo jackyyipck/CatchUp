@@ -1,3 +1,6 @@
+<?php
+date_default_timezone_set("Asia/Hong_Kong"); 
+?>
 <b>Verify Code Creation</b>
 <form action="create-verify-user.php" method="post">
 	<input type="hidden" name="action" value="create-verify-code"/>
@@ -11,7 +14,7 @@
 			<td><input type="text" name="device_id"/></td>
 		</tr>			
 		<tr>
-			<td><input type="submit" value="Submit"></td>
+			<td><input type="hidden" name="security_key" value="<?php echo sha1(date("YmdHi",time()).'TACHYON'); ?>"><input type="submit" value="Submit"></td>
 			<td></td>
 		</tr>
 	</table>

@@ -21,10 +21,25 @@ function init_db()
 		// Enable security check
 		if(isset($_REQUEST['security_key']) or isset($_SESSION['security_key']))
 		{
-			if(!verify_security_pass($_SESSION["db_conn"], isset($_REQUEST['security_key'])?$_REQUEST['security_key']:$_SESSION['security_key']))
+			if(isset($_REQUEST['action']))
+			{
+				//Skip device ID when action is create/verify user related
+				if($_REQUEST['action'] == "create-verify-code" || $_REQUEST['action'] == "verify-user" || 
+					$_REQUEST['action'] == "enrich-user" || $_REQUEST['action'] == "unlink-user" || 
+					$_REQUEST['action'] == "get-verify-state")
+				{
+					if(!verify_security_pass('', $_REQUEST['security_key'], false))
+					{
+						header( 'Location: error.php?error_msg=Invalid security key from page '.$_SERVER['PHP_SELF']) ;
+						exit;
+					}
+				}
+			}
+			elseif(!verify_security_pass($_SESSION["db_conn"], isset($_REQUEST['security_key'])?$_REQUEST['security_key']:$_SESSION['security_key'], true))
 			{
 				//echo "Invalid security key (from ".$_SERVER['PHP_SELF'].")";
 				header( 'Location: error.php?error_msg=Invalid security key from page '.$_SERVER['PHP_SELF']) ;
+				exit;
 				//header( 'Location: error.php');
 			}
 		}
@@ -32,26 +47,45 @@ function init_db()
 		{
 			//echo "Security key not found (from ".$_SERVER['PHP_SELF'].")";
 			header( 'Location: error.php?error_msg=Security key not found from page '.$_SERVER['PHP_SELF']) ;
+			exit;
 			//header( 'Location: error.php');
 		}
 	}
 }
-function verify_security_pass($db_conn, $security_key)
+function verify_security_pass($db_conn, $security_key, $withDeviceId)
 {
-
-	//Number of historical check windows (by minute)
-	$valid_window = 2; 
 	$current_timestamp = time();
 	$secret_key = "TACHYON";
-	$user_id_query_result = mysql_query(get_verified_user_id(), $db_conn);
 	$security_status = false;
-	while($user_id_query_row = mysql_fetch_assoc($user_id_query_result))
+	if($withDeviceId)
 	{
-		$user_id = $user_id_query_row['user_id'];
-		$device_id = $user_id_query_row['device_id'];
-		for($i=0; $i<$valid_window; $i++)
+		$user_id_query_result = mysql_query(get_verified_user_id_sql(), $db_conn);
+		while($user_id_query_row = mysql_fetch_assoc($user_id_query_result))
 		{
-			$enryption_key = date("YmdHi",$current_timestamp - $i).$device_id.$secret_key;
+			$user_id = $user_id_query_row['user_id'];
+			$device_id = $user_id_query_row['device_id'];
+			for($i=0; $i<3; $i++)
+			{
+				$enryption_key = date("YmdHi",$current_timestamp - 60*($i - 1)).$device_id.$secret_key;
+				$security_valid_passcode = sha1($enryption_key);
+				if(!strcmp($security_valid_passcode, $security_key))
+				{
+					$security_status = true;
+					break;
+				}
+			}
+			if($security_status)
+			{
+				break;
+			}
+		}
+		mysql_free_result($user_id_query_result);
+	}
+	else
+	{
+		for($i=0; $i<3; $i++)
+		{
+			$enryption_key = date("YmdHi",$current_timestamp - 60*($i - 1)).$secret_key;
 			$security_valid_passcode = sha1($enryption_key);
 			if(!strcmp($security_valid_passcode, $security_key))
 			{
@@ -59,12 +93,7 @@ function verify_security_pass($db_conn, $security_key)
 				break;
 			}
 		}
-		if($security_status)
-		{
-			break;
-		}
-	}
-	mysql_free_result($user_id_query_result);
+	}	
 	return $security_status;
 }
 function create_event_detail($db_conn, 
