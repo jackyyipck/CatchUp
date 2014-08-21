@@ -9,7 +9,16 @@ header("Content-Type: text/xml; charset=utf-8");
 $event_list_query_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events/>');
 
 $friend_id = $_REQUEST["friend_id"];
-$event_sql = get_event_sql($_REQUEST["user_id"]);
+$action = @$_REQUEST["action"];
+
+if($action == "get-expired-event"])
+{
+	$event_sql = get_event_sql($_REQUEST["user_id"], true);
+}
+else
+{
+	$event_sql = get_event_sql($_REQUEST["user_id"], false);
+}
 
 $event_list_query_result = mysql_query($event_sql);
 while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {

@@ -2,7 +2,7 @@
 include 'catchup-sql.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
 define("ENABLE_SECURITY_CHECK", false);
-define("ENABLE_PUSH_NOTIFICATION", true);
+define("ENABLE_PUSH_NOTIFICATION", false);
 
 function init_db()
 {

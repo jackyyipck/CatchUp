@@ -97,14 +97,23 @@ function get_user_sql_by_user_mobile($arr_user_mobile)
 			ORDER BY user_name';
 	return $sql;
 }
-function get_event_sql($p_user_id)
+function get_event_sql($p_user_id, $is_expired)
 {
 	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename
 			FROM tbl_event, tbl_event_user
 			WHERE 1=1
 			AND tbl_event.event_id = tbl_event_user.event_id
-			AND tbl_event_user.user_id = '.$p_user_id.'
-			ORDER BY tbl_event.event_updated_at DESC';
+			AND tbl_event_user.user_id = '.$p_user_id;
+	if($is_expired)
+	{
+		$sql .= ' AND tbl_event.event_expire_at < NOW()';
+	}
+	else
+	{
+		$sql .= ' AND tbl_event.event_expire_at > NOW()';
+	}		
+			
+	$sql .= ' ORDER BY tbl_event.event_updated_at DESC';
 	return $sql;
 }
 function get_event_by_event_id_sql($p_event_id)
