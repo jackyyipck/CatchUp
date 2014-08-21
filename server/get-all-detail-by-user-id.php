@@ -12,14 +12,31 @@ $event_sql = get_event_sql($_REQUEST["user_id"]);
 $event_list_query_result = mysql_query($event_sql);
 while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	
+	$event_profile_pic = "";
+	if($event_list_query_row['event_profile_filename'] == '')
+	{
+		$event_profile_pic = "default";
+	} 
+	else
+	{
+		$event_profile_pic = $event_list_query_row['event_profile_filename'];
+	}
+	
 	$event_node = $event_list_query_row_node->addChild('event');
 	$event_node->addAttribute('event_id',$event_list_query_row['event_id']);
 	$event_node->addChild('event_name',$event_list_query_row['event_name']);
 	$event_node->addChild('event_desc',$event_list_query_row['event_desc']);
+	$event_node->addChild('event_profile_pic',$event_profile_pic);
 	$event_node->addAttribute('event_create_at',$event_list_query_row['event_create_at']);
+	$event_node->addAttribute('event_updated_at',$event_list_query_row['event_updated_at']);
 	$event_node->addAttribute('event_start_at',$event_list_query_row['event_start_at']);
 	$event_node->addAttribute('event_expire_at',$event_list_query_row['event_expire_at']);
 	$event_node->addAttribute('is_allday',$event_list_query_row['is_allday']);
+	
+	//******<message>*********
+	$message_sql = get_comment_sql_by_event_id($event_list_query_row['event_id'], $_REQUEST["user_id"]);
+	$message_list_query_result = mysql_query($message_sql);
+	$event_node->addChild('event_messages',mysql_num_rows($message_list_query_result));
 	
 	//******<invitor>*********
 	$invitor_sql = get_userdetails_sql($event_list_query_row['event_create_by']);

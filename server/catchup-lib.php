@@ -1,8 +1,8 @@
 <?php 
 include 'catchup-sql.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
-define("ENABLE_SECURITY_CHECK", true);
-define("ENABLE_PUSH_NOTIFICATION", false);
+define("ENABLE_SECURITY_CHECK", false);
+define("ENABLE_PUSH_NOTIFICATION", true);
 
 function init_db()
 {
@@ -25,8 +25,7 @@ function init_db()
 			{
 				//Skip device ID when action is create/verify user related
 				if($_REQUEST['action'] == "create-verify-code" || $_REQUEST['action'] == "verify-user" || 
-					$_REQUEST['action'] == "enrich-user" || $_REQUEST['action'] == "unlink-user" || 
-					$_REQUEST['action'] == "get-verify-state")
+					$_REQUEST['action'] == "unlink-user" || $_REQUEST['action'] == "get-verify-code")
 				{
 					if(!verify_security_pass('', $_REQUEST['security_key'], false))
 					{
@@ -138,10 +137,12 @@ function create_or_update_event_detail($db_conn,
 							$event_name, 
 							$event_desc, 
 							$create_at,
+							$updated_at,
 							$start_at,							
 							$expire_at, 
 							$create_by, 
 							$is_allday,
+							$is_public,
 							$arr_option_id,
 							$arr_option_name, 
 							$arr_option_desc, 
@@ -175,7 +176,7 @@ function create_or_update_event_detail($db_conn,
 		// If no file object, attempt to get filename
 		$target_filename = $event_profile_filename;
 	}
-	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday, $target_filename), $db_conn))
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $expire_at, $create_by, $is_allday, $is_public, $target_filename), $db_conn))
 	{
 		if($event_id=='')
 		{
@@ -226,6 +227,7 @@ function get_event_detail($db_conn, $event_id)
 		$result['event']['event_expire_at'] = $event_query_row['event_expire_at'];
 		$result['event']['event_create_by'] = $event_query_row['event_create_by'];
 		$result['event']['is_allday'] = $event_query_row['is_allday'];
+		$result['event']['is_public'] = $event_query_row['is_public'];
 		$result['event']['event_profile_filename'] = $event_query_row['event_profile_filename'];
 	}
 	mysql_free_result($event_query_result);
@@ -321,7 +323,7 @@ function create_vote($db_conn, $user_id, $option_id)
 			if($user_id != $user_query_row["user_id"])
 			{
 				push_msg($db_conn, $user_query_row["user_id"], 
-									get_user_name($db_conn, $user_id)." @ ".$user_query_row["event_name"].": vote updated");
+									get_user_name($db_conn, $user_id)." @ ".$user_query_row["event_name"].": vote updated", $user_query_row["event_id"]);
 			}
 		}
 		mysql_free_result($user_query_result);
@@ -430,7 +432,7 @@ function create_comment_event_pair($db_conn, $comment_id, $event_id)
 		return $result;
 	}
 }
-function create_comment_detail($db_conn, $user_comment, $create_by, $event_id)
+function create_comment_detail($db_conn, $user_comment, $create_by, $updated_at, $event_id)
 {
 	$comment_id = create_comments($db_conn, $user_comment, $create_by);
 	if ($comment_id > 0)
@@ -443,9 +445,10 @@ function create_comment_detail($db_conn, $user_comment, $create_by, $event_id)
 			if($user_query_row["user_id"] != $create_by)
 			{
 				push_msg($db_conn, $user_query_row["user_id"], 
-						get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": ".$user_comment);
+						get_user_name($db_conn, $create_by)." @ ".$user_query_row["event_name"].": ".$user_comment, $user_query_row["event_id"]);
 			}
 		}
+		mysql_query(update_time_sql($event_id, $updated_at));
 		mysql_free_result($user_query_result);
 	}
 	return $event_id;
@@ -521,7 +524,7 @@ function get_device_token($db_conn, $user_id)
 	}
 	return $return_result;
 }
-function push_msg($db_conn, $user_id, $msg)
+function push_msg($db_conn, $user_id, $msg, $event_id)
 {
 	if(!ENABLE_PUSH_NOTIFICATION)
 	{
@@ -529,14 +532,16 @@ function push_msg($db_conn, $user_id, $msg)
 	}
 	else
 	{
+		$badge_count = get_badge_count($db_conn, $user_id);
+		$badge_count++;
 		$tToken = get_device_token($db_conn, $user_id);
 		$tAlert = $msg;
 		$tBody['aps'] = array (
 								'alert' => $tAlert,
-								'badge' => 8,
+								'badge' => $badge_count,
 								'sound' => 'default',
 								);
-		$tBody ['payload'] = 'APNS Message Handled by LiveCode';
+		$tBody ['payload'] = $event_id;
 		$tBody = json_encode ($tBody);
 		$tContext = stream_context_create ();
 		stream_context_set_option ($tContext, 'ssl', 'local_cert', 'CatchUpCertificateKey.pem');
@@ -547,11 +552,33 @@ function push_msg($db_conn, $user_id, $msg)
 		$tMsg = chr (0) . chr (0) . chr (32) . pack ('H*', $tToken) . pack ('n', strlen ($tBody)) . $tBody;
 		$tResult = fwrite ($tSocket, $tMsg, strlen ($tMsg));
 		if ($tResult)
+		{	
 			write_log(0,'Delivered Message to APNS');
+			update_badge_count($db_conn, $badge_count, $user_id);
+		}
 		else
+		{
 			write_log(1,'Could not Deliver Message to APNS');
+		}
 		fclose ($tSocket);
 	}
 }
+function get_badge_count($db_conn, $user_id)
+{
+	$badge_count_query_result = mysql_query(get_badge_count_sql($user_id), $db_conn);
+	if ($badge_count_query_row = mysql_fetch_assoc($badge_count_query_result))
+	{
+		$return_result = $badge_count_query_row['badge_count'];
+	}
+	else
+	{
+		$return_result = 0;
+	}
+	return $return_result;
+}	
+function update_badge_count($db_conn, $badge_count, $user_id)
+{
+	return mysql_query(update_badge_count_sql($badge_count, $user_id), $db_conn);	
+}	
 
 ?>

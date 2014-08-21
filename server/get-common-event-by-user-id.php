@@ -25,6 +25,16 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 		if ($user_list_query_row['user_id'] == $friend_id)
 		{
 		
+			$event_profile_pic = "";
+			if($event_list_query_row['event_profile_filename'] == '')
+			{
+			$event_profile_pic = "default";
+			} 
+			else
+			{
+				$event_profile_pic = $event_list_query_row['event_profile_filename'];
+			}
+	
 			$event_node = $event_list_query_row_node->addChild('event');
 			$event_node->addAttribute('event_id',$event_list_query_row['event_id']);
 			$event_node->addChild('event_name',$event_list_query_row['event_name']);
@@ -35,6 +45,7 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 			$event_node->addAttribute('event_start_at',$event_list_query_row['event_start_at']);
 			$event_node->addAttribute('event_expire_at',$event_list_query_row['event_expire_at']);
 			$event_node->addAttribute('is_allday', $event_list_query_row['is_allday']);
+			$event_node->addChild('event_profile_pic',$event_profile_pic);
 			
 			//******<invitor>*********
 			$invitor_sql = get_userdetails_sql($event_list_query_row['event_create_by']);

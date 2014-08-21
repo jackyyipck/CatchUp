@@ -10,7 +10,7 @@ $tCert = 'CatchUpCertificateKey.pem';
 $tPassphrase = 'Lov627er';
 // Provide the Device Identifier (Ensure that the Identifier does not have spaces in it).
 // Replace this token with the token of the iOS device that is to receive the notification.
-$tToken = '498685f78591ff6f8913bac0c430154c1f4a1c691238698ec1a4c21725a9f229';
+$tToken = '4a281cfd040762b81e6054343b09e37c178252ceeb3427f1c6c06bf5095751cf';
 // The message that is to appear on the dialog.
 $tAlert = 'Testing Testing Testing';
 // The Badge Number for the Application Icon (integer >=0).

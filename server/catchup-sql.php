@@ -99,16 +99,17 @@ function get_user_sql_by_user_mobile($arr_user_mobile)
 }
 function get_event_sql($p_user_id)
 {
-	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday
+	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename
 			FROM tbl_event, tbl_event_user
 			WHERE 1=1
 			AND tbl_event.event_id = tbl_event_user.event_id
-			AND tbl_event_user.user_id = '.$p_user_id;
+			AND tbl_event_user.user_id = '.$p_user_id.'
+			ORDER BY tbl_event.event_updated_at DESC';
 	return $sql;
 }
 function get_event_by_event_id_sql($p_event_id)
 {
-	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename
+	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename, is_public
 			FROM tbl_event
 			WHERE 1=1
 			AND event_id = '.$p_event_id;
@@ -138,20 +139,22 @@ function create_event_sql($event_name, $event_desc, $start_at, $expire_at, $crea
 			)";
 	return $sql;		
 }
-function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $start_at, $expire_at, $create_by, $is_allday, $event_profile_filename)
+function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $expire_at, $create_by, $is_allday, $is_public, $event_profile_filename)
 {
 	$sql = "INSERT INTO tbl_event 
-			(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename) 
+			(event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_expire_at, event_create_by, is_allday, is_public, event_profile_filename) 
 			VALUES 
 			(
 				'".$event_id."',
 				'".$event_name."', 
 				'".$event_desc."',
 				'".$create_at."',
+				'".$updated_at."',
 				'".$start_at."', 
 				'".$expire_at."', 
 				'".$create_by."',
 				'".$is_allday."',
+				'".$is_public."',
 				'".$event_profile_filename."'
 				
 			)
@@ -159,7 +162,8 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 			event_id = VALUES(event_id), 
 			event_name = VALUES(event_name), 
 			event_desc = VALUES(event_desc), 
-			event_create_at = VALUES(event_create_at), 
+			event_create_at = VALUES(event_create_at),
+			event_updated_at = VALUES(event_updated_at), 
 			event_start_at = VALUES(event_start_at), 
 			event_expire_at = VALUES(event_expire_at), 
 			event_create_by = VALUES(event_create_by),	
@@ -462,7 +466,7 @@ function get_unread_by_event_id_sql($p_event_id, $p_last_comment_id, $p_user_id)
 }
 function get_user_id_in_group_has_comment_sql($p_comment_id)
 {
-	$sql = "SELECT tbl_event.event_name, tbl_event_user.user_id
+	$sql = "SELECT tbl_event.event_name, tbl_event.event_id, tbl_event_user.user_id
 			FROM tbl_comment_event, tbl_event, tbl_event_user
 			WHERE tbl_comment_event.event_id = tbl_event_user.event_id
 			AND tbl_event.event_id = tbl_event_user.event_id
@@ -471,7 +475,7 @@ function get_user_id_in_group_has_comment_sql($p_comment_id)
 }
 function get_user_id_in_group_has_option_sql($p_option_id)
 {
-	$sql = "SELECT tbl_event.event_name, tbl_event_user.user_id
+	$sql = "SELECT tbl_event.event_name, tbl_event.event_id, tbl_event_user.user_id
 			FROM tbl_event_option, tbl_event, tbl_event_user
 			WHERE tbl_event.event_id = tbl_event_user.event_id
 			AND tbl_event_option.event_id = tbl_event_user.event_id
@@ -483,6 +487,37 @@ function get_verified_user_id_sql()
 	$sql = "SELECT user_id, device_id
 			FROM tbl_user
 			WHERE has_verified = 1";
+	return $sql;
+}
+function get_badge_count_sql($p_user_id)
+{
+	$sql = "SELECT badge_count
+			FROM tbl_user
+			WHERE user_id = '".$p_user_id."'";
+	return $sql;
+}
+function update_badge_count_sql($badge_count, $p_user_id)
+{
+	$sql = "UPDATE tbl_user
+			SET badge_count = '".$badge_count."' 
+			WHERE user_id = '".$p_user_id."'";
+	return $sql;
+}
+function update_time_sql($event_id, $updated_at)
+{
+	$sql = "UPDATE tbl_event
+			SET event_updated_at = '".$updated_at."'
+			WHERE event_id = '".$event_id."'";
+	return $sql;
+}
+function get_comment_sql_by_event_id($p_event_id, $p_user_id)
+{
+	$sql = "SELECT tbl_comment.comment_id
+			FROM tbl_comment, tbl_comment_event
+			WHERE 1=1
+			AND tbl_comment.comment_id= tbl_comment_event.comment_id
+			AND tbl_comment_event.event_id = '".$p_event_id."'
+			AND tbl_comment.create_by <> '".$p_user_id."'";
 	return $sql;
 }
 ?>
