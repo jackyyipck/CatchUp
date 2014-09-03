@@ -11,7 +11,7 @@ $event_list_query_row_node = new SimpleXMLElement('<?xml version="1.0" encoding=
 $friend_id = $_REQUEST["friend_id"];
 $action = @$_REQUEST["action"];
 
-if($action == "get-expired-event"])
+if($action == "get-expired-event")
 {
 	$event_sql = get_event_sql($_REQUEST["user_id"], true);
 }
@@ -52,6 +52,7 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 			$event_node->addChild('event_respondents',mysql_num_rows($distinct_respondent_query_result));
 			$event_node->addAttribute('event_create_at',$event_list_query_row['event_create_at']);
 			$event_node->addAttribute('event_start_at',$event_list_query_row['event_start_at']);
+			$event_node->addAttribute('event_end_at',$event_list_query_row['event_end_at']);
 			$event_node->addAttribute('event_expire_at',$event_list_query_row['event_expire_at']);
 			$event_node->addAttribute('is_allday', $event_list_query_row['is_allday']);
 			$event_node->addChild('event_profile_pic',$event_profile_pic);

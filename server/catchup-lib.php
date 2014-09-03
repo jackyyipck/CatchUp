@@ -2,14 +2,15 @@
 include 'catchup-sql.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
 define("ENABLE_SECURITY_CHECK", false);
-define("ENABLE_PUSH_NOTIFICATION", false);
+define("ENABLE_PUSH_NOTIFICATION", true);
 
 function init_db()
 {
 	if ($_SERVER["HTTP_HOST"] == "www.seayu.hk")
 	{
 		$_SESSION["db_conn"] = mysql_connect('localhost', 'seayu_catchup', 'anios');
-	}else
+	}
+	else
 	{
 		$_SESSION["db_conn"] = mysql_connect('localhost', 'root', '');
 	}
@@ -99,13 +100,14 @@ function create_event_detail($db_conn,
 							$event_name, 
 							$event_desc, 
 							$start_at,
+							$end_at,
 							$expire_at, 
 							$create_by, 
 							$arr_option_name, 
 							$arr_option_desc, 
 							$arr_user_id)
 {
-	$event_id = create_event($db_conn, $event_name, $event_desc, $start_at, $expire_at, $create_by);
+	$event_id = create_event($db_conn, $event_name, $event_desc, $start_at, $end_at, $expire_at, $create_by);
 	if ($event_id > 0)
 	{
 		for($i = 0; $i<count($arr_option_name); $i++)
@@ -138,7 +140,8 @@ function create_or_update_event_detail($db_conn,
 							$event_desc, 
 							$create_at,
 							$updated_at,
-							$start_at,							
+							$start_at,
+							$end_at,							
 							$expire_at, 
 							$create_by, 
 							$is_allday,
@@ -176,7 +179,7 @@ function create_or_update_event_detail($db_conn,
 		// If no file object, attempt to get filename
 		$target_filename = $event_profile_filename;
 	}
-	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $expire_at, $create_by, $is_allday, $is_public, $target_filename), $db_conn))
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $end_at, $expire_at, $create_by, $is_allday, $is_public, $target_filename), $db_conn))
 	{
 		if($event_id=='')
 		{
@@ -224,10 +227,12 @@ function get_event_detail($db_conn, $event_id)
 		$result['event']['event_desc'] = $event_query_row['event_desc'];
 		$result['event']['event_create_at'] = $event_query_row['event_create_at'];
 		$result['event']['event_start_at'] = $event_query_row['event_start_at'];
+		$result['event']['event_end_at'] = $event_query_row['event_end_at'];
 		$result['event']['event_expire_at'] = $event_query_row['event_expire_at'];
 		$result['event']['event_create_by'] = $event_query_row['event_create_by'];
 		$result['event']['is_allday'] = $event_query_row['is_allday'];
 		$result['event']['is_public'] = $event_query_row['is_public'];
+		$result['event']['allow_vote'] = $event_query_row['allow_vote'];
 		$result['event']['event_profile_filename'] = $event_query_row['event_profile_filename'];
 	}
 	mysql_free_result($event_query_result);
@@ -284,10 +289,10 @@ function remove_event_user_pair($db_conn, $event_id, $user_id)
 {
 	return mysql_query(remove_event_option_pair_sql($event_id, $user_id), $db_conn);	
 }
-function create_event($db_conn, $event_name, $event_desc, $start_at, $expire_at, $create_by)
+function create_event($db_conn, $event_name, $event_desc, $start_at, $end_at, $expire_at, $create_by)
 {
 	$event_id = 0;
-	if (mysql_query(create_event_sql($event_name, $event_desc, $start_at, $expire_at, $create_by), $db_conn))
+	if (mysql_query(create_event_sql($event_name, $event_desc, $start_at, $end_at, $expire_at, $create_by), $db_conn))
 	{
 		$event_id = mysql_insert_id($db_conn);
 	}
@@ -546,7 +551,7 @@ function push_msg($db_conn, $user_id, $msg, $event_id)
 		$tContext = stream_context_create ();
 		stream_context_set_option ($tContext, 'ssl', 'local_cert', 'CatchUpCertificateKey.pem');
 		stream_context_set_option ($tContext, 'ssl', 'passphrase', 'Lov627er');
-		$tSocket = stream_socket_client ('ssl://gateway.sandbox.push.apple.com:2195', $error, $errstr, 30, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $tContext);
+		$tSocket = stream_socket_client ('	', $error, $errstr, 30, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $tContext);
 		if (!$tSocket)
 			write_log(3, "APNS Connection Failed: $error $errstr" . PHP_EOL);
 		$tMsg = chr (0) . chr (0) . chr (32) . pack ('H*', $tToken) . pack ('n', strlen ($tBody)) . $tBody;
@@ -580,5 +585,17 @@ function update_badge_count($db_conn, $badge_count, $user_id)
 {
 	return mysql_query(update_badge_count_sql($badge_count, $user_id), $db_conn);	
 }	
-
+function remind_user($db_conn, $user_id, $event_id)
+{
+	//Notification
+	$event_query_result = mysql_query(get_event_sql($user_id, false));
+	$event_query_row = mysql_fetch_assoc($event_query_result);
+	push_msg($db_conn, $user_id, 
+						get_user_name($db_conn, $user_id)." @ ".$event_query_row["event_name"].": Please respond!", $event_query_row["event_id"]);
+	mysql_free_result($event_query_result);
+}
+function trigger_vote($db_conn, $event_id, $vote_status)
+{
+	return mysql_query(trigger_vote_sql($event_id, $vote_status), $db_conn);
+}
 ?>

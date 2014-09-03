@@ -39,8 +39,10 @@ while($event_list_query_row = mysql_fetch_assoc($event_list_query_result)) {
 	$event_node->addAttribute('event_create_at',$event_list_query_row['event_create_at']);
 	$event_node->addAttribute('event_updated_at',$event_list_query_row['event_updated_at']);
 	$event_node->addAttribute('event_start_at',$event_list_query_row['event_start_at']);
+	$event_node->addAttribute('event_end_at',$event_list_query_row['event_end_at']);
 	$event_node->addAttribute('event_expire_at',$event_list_query_row['event_expire_at']);
 	$event_node->addAttribute('is_allday',$event_list_query_row['is_allday']);
+	$event_node->addAttribute('allow_vote',$event_list_query_row['allow_vote']);
 	
 	//******<message>*********
 	$message_sql = get_comment_sql_by_event_id($event_list_query_row['event_id'], $_REQUEST["user_id"]);

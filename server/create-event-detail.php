@@ -8,8 +8,8 @@ $_REQUEST["user_id"][] = $_REQUEST["create_by"];
 /* Core execution */
 if(@$_REQUEST["action"] == "delete"){
 	delete_event_detail($_SESSION["db_conn"], $_REQUEST["event_id"]);
-	header( 'Location: create-event-detail-test.php');
-}else{
+	//header( 'Location: create-event-detail-test.php');
+} else {
 	$event_id = create_or_update_event_detail($_SESSION["db_conn"], 
 						@$_REQUEST["event_id"],
 						@$_REQUEST["event_name"],
@@ -17,6 +17,7 @@ if(@$_REQUEST["action"] == "delete"){
 						@$_REQUEST["create_at"],
 						@$_REQUEST["updated_at"],
 						@$_REQUEST["start_at"],
+						@$_REQUEST["end_at"],
 						@$_REQUEST["expire_at"],
 						@$_REQUEST["create_by"],
 						@$_REQUEST["is_allday"],
@@ -28,6 +29,6 @@ if(@$_REQUEST["action"] == "delete"){
 						@$_REQUEST["event_profile_pic_filename"],
 						@$_FILES["event_profile_pic"]);
 					
-	header( 'Location: create-event-detail-test.php?event_id='.$event_id.'') ;
+	//header( 'Location: create-event-detail-test.php?event_id='.$event_id.'') ;
 }
 ?>

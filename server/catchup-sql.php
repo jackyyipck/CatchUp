@@ -99,11 +99,12 @@ function get_user_sql_by_user_mobile($arr_user_mobile)
 }
 function get_event_sql($p_user_id, $is_expired)
 {
-	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename
+	$sql = 'SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_end_at, event_expire_at, event_create_by, is_allday, event_profile_filename, is_public, allow_vote
 			FROM tbl_event, tbl_event_user
 			WHERE 1=1
 			AND tbl_event.event_id = tbl_event_user.event_id
 			AND tbl_event_user.user_id = '.$p_user_id;
+	
 	if($is_expired)
 	{
 		$sql .= ' AND tbl_event.event_expire_at < NOW()';
@@ -118,7 +119,7 @@ function get_event_sql($p_user_id, $is_expired)
 }
 function get_event_by_event_id_sql($p_event_id)
 {
-	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by, is_allday, event_profile_filename, is_public
+	$sql = 'SELECT event_id, event_name, event_desc, event_create_at, event_start_at, event_end_at, event_expire_at, event_create_by, is_allday, event_profile_filename, is_public, allow_vote
 			FROM tbl_event
 			WHERE 1=1
 			AND event_id = '.$p_event_id;
@@ -134,24 +135,25 @@ function get_user_vote_sql($p_option_id)
 			AND tbl_option_user.option_id = '.$p_option_id;
 	return $sql;
 }
-function create_event_sql($event_name, $event_desc, $start_at, $expire_at, $create_by)
+function create_event_sql($event_name, $event_desc, $start_at, $end_at, $expire_at, $create_by)
 {
 	$sql = "INSERT INTO tbl_event 
-			(event_name, event_desc, event_start_at, event_expire_at, event_create_by) 
+			(event_name, event_desc, event_start_at, event_end_at, event_expire_at, event_create_by) 
 			VALUES 
 			(
 				'".$event_name."', 
 				'".$event_desc."',
 				'".$start_at."', 
+				'".$end_at."',
 				'".$expire_at."', 
 				'".$create_by."'
 			)";
 	return $sql;		
 }
-function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $expire_at, $create_by, $is_allday, $is_public, $event_profile_filename)
+function create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $end_at, $expire_at, $create_by, $is_allday, $is_public, $event_profile_filename)
 {
 	$sql = "INSERT INTO tbl_event 
-			(event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_expire_at, event_create_by, is_allday, is_public, event_profile_filename) 
+			(event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_end_at, event_expire_at, event_create_by, is_allday, is_public, event_profile_filename) 
 			VALUES 
 			(
 				'".$event_id."',
@@ -160,6 +162,7 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 				'".$create_at."',
 				'".$updated_at."',
 				'".$start_at."', 
+				'".$end_at."',
 				'".$expire_at."', 
 				'".$create_by."',
 				'".$is_allday."',
@@ -174,6 +177,7 @@ function create_or_update_event_sql($event_id, $event_name, $event_desc, $create
 			event_create_at = VALUES(event_create_at),
 			event_updated_at = VALUES(event_updated_at), 
 			event_start_at = VALUES(event_start_at), 
+			event_end_at = VALUES(event_end_at),
 			event_expire_at = VALUES(event_expire_at), 
 			event_create_by = VALUES(event_create_by),	
 			is_allday = VALUES(is_allday),
@@ -527,6 +531,13 @@ function get_comment_sql_by_event_id($p_event_id, $p_user_id)
 			AND tbl_comment.comment_id= tbl_comment_event.comment_id
 			AND tbl_comment_event.event_id = '".$p_event_id."'
 			AND tbl_comment.create_by <> '".$p_user_id."'";
+	return $sql;
+}
+function trigger_vote_sql($event_id, $vote_status)
+{
+	$sql = "UPDATE tbl_event
+			SET allow_vote = '".$vote_status."'
+			WHERE event_id = '".$event_id."'";
 	return $sql;
 }
 ?>

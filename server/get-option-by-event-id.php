@@ -14,9 +14,11 @@ $return_value = get_event_detail($_SESSION["db_conn"], $_REQUEST["event_id"]);
 $response_row_node->addChild('event_name', $return_value['event']['event_name']);
 $response_row_node->addChild('event_desc', $return_value['event']['event_desc']);
 $response_row_node->addChild('start_date', $return_value['event']['event_start_at']);
+$response_row_node->addChild('end_date', $return_value['event']['event_end_at']);
 $response_row_node->addChild('expiry_date', $return_value['event']['event_expire_at']);
 $response_row_node->addChild('is_allday', $return_value['event']['is_allday']);
 $response_row_node->addChild('is_public', $return_value['event']['is_public']);
+$response_row_node->addChild('allow_vote', $return_value['event']['allow_vote']);
 
 //******<message>*********
 
@@ -56,6 +58,7 @@ while($option_query_row = mysql_fetch_assoc($option_query_result))
 	while($voter_query_row = mysql_fetch_assoc($voter_query_result))
 	{
 		$voter_name_node = $option_node->addChild('voter_name', $voter_query_row['user_name']);
+		$voter_name_node->addAttribute('voter_id', $voter_query_row['user_id']);
 	}
 	mysql_free_result($voter_query_result);	
 	
@@ -92,6 +95,7 @@ $rsvp_node->addAttribute('vote_status', 0);
 while($rsvp_query_row = mysql_fetch_assoc($rsvp_query_result))
 {
 	$rsvp_name_node = $option_node->addChild('voter_name', $rsvp_query_row['user_name']);
+	$rsvp_name_node->addAttribute('voter_id', $rsvp_query_row['user_id']);
 }
 	
 mysql_free_result($respondent_query_result);
