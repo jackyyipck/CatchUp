@@ -258,7 +258,7 @@ function create_test_event()
 	mysql_query("INSERT INTO tbl_event 
 				(event_id, event_name, event_desc, event_create_at, event_start_at, event_expire_at, event_create_by) 
 				VALUES 
-				('99981', 'TestEvent1', 'TestEvent1 Description', '2013-10-22 00:00:00', '2013-10-30 00:00:01', '2013-10-30 00:00:02', '999001');");
+				('99981', 'TestEvent1', 'TestEvent1 Description', '2013-10-22 00:00:00', '2013-10-30 00:00:01', '2099-10-30 00:00:02', '999001');");
 				
 	mysql_query("INSERT INTO tbl_event_user 
 				(event_id, user_id)
@@ -275,7 +275,7 @@ function test_empty_event()
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
-										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
+										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2099-10-30 00:00:02" is_allday="0">
 											<event_name>TestEvent1</event_name>
 											<event_desc>TestEvent1 Description</event_desc>
 											<invitor><event_create_by invitor_id="999001">Tester1</event_create_by></invitor>
@@ -343,7 +343,7 @@ function test_invitee()
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));
 	$actual = new SimpleXMLElement (file_get_contents($url));	
 	$expected = new SimpleXMLElement('<events>
-										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
+										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2099-10-30 00:00:02" is_allday="0">
 											<event_name>TestEvent1</event_name>
 											<event_desc>TestEvent1 Description</event_desc>
 											<invitor><event_create_by invitor_id="999001">Tester1</event_create_by></invitor>
@@ -402,7 +402,7 @@ function test_option()
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
-										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
+										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2099-10-30 00:00:02" is_allday="0">
 											<event_name>TestEvent1</event_name>
 											<event_desc>TestEvent1 Description</event_desc>
 											<invitor><event_create_by invitor_id="999001">Tester1</event_create_by></invitor>
@@ -476,7 +476,7 @@ function test_vote()
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
-										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
+										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2099-10-30 00:00:02" is_allday="0">
 											<event_name>TestEvent1</event_name>
 											<event_desc>TestEvent1 Description</event_desc>
 											<invitor><event_create_by invitor_id="999001">Tester1</event_create_by></invitor>
@@ -568,7 +568,7 @@ function test_vote()
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
-										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
+										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2099-10-30 00:00:02" is_allday="0">
 											<event_name>TestEvent1</event_name>
 											<event_desc>TestEvent1 Description</event_desc>
 											<invitor><event_create_by invitor_id="999001">Tester1</event_create_by></invitor>
@@ -654,7 +654,7 @@ function test_vote()
 	$url = get_full_url("get-all-detail-by-user-id.php?user_id=999001&security_key=".get_security_key(true));	
 	$actual = new SimpleXMLElement (file_get_contents($url));
 	$expected = new SimpleXMLElement('<events>
-										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2013-10-30 00:00:02" is_allday="0">
+										<event event_id="99981" event_create_at="2013-10-22 00:00:00" event_start_at="2013-10-30 00:00:01" event_expire_at="2099-10-30 00:00:02" is_allday="0">
 											<event_name>TestEvent1</event_name>
 											<event_desc>TestEvent1 Description</event_desc>
 											<invitor><event_create_by invitor_id="999001">Tester1</event_create_by></invitor>
