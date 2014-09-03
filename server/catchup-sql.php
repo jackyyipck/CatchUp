@@ -540,4 +540,11 @@ function trigger_vote_sql($event_id, $vote_status)
 			WHERE event_id = '".$event_id."'";
 	return $sql;
 }
+function update_profile_pic_sql($event_id, $target_filename)
+{
+	$sql = "UPDATE tbl_event 
+			set event_profile_filename = '".$target_filename."'
+			WHERE event_id ='".$event_id."'";
+	return $sql;		
+}
 ?>
