@@ -26,6 +26,7 @@ if(@$_REQUEST["action"] == "delete"){
 						@$_REQUEST["option_name"],
 						@$_REQUEST["option_desc"],
 						@$_REQUEST["user_id"],
+						@$_REQUEST["allow_vote"],
 						@$_REQUEST["event_profile_pic_filename"],
 						@$_FILES["event_profile_pic"]);
 					

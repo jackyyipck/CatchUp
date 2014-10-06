@@ -13,11 +13,11 @@ $action = @$_REQUEST["action"];
 
 if($action == "get-expired-event")
 {
-	$event_sql = get_event_sql($_REQUEST["user_id"], 0, true);
+	$event_sql = get_event_sql($_REQUEST["user_id"], true);
 }
 else
 {
-	$event_sql = get_event_sql($_REQUEST["user_id"], 0, false);
+	$event_sql = get_event_sql($_REQUEST["user_id"], false);
 }
 
 $event_list_query_result = mysql_query($event_sql);

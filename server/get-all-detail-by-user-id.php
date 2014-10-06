@@ -8,14 +8,16 @@ header("Content-Type: text/xml; charset=utf-8");
 //XML compilation*****************
 $event_list_query_row_node = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events/>');
 $action = @$_REQUEST["action"];
+$no_of_records = @$_REQUEST["num"];
+
 
 if($action == "get-expired-event")
 {
-	$event_sql = get_event_sql($_REQUEST["user_id"], true);
+	$event_sql = get_event_sql($_REQUEST["user_id"], $no_of_records, true);
 }
 else
 {
-	$event_sql = get_event_sql($_REQUEST["user_id"], false);
+	$event_sql = get_event_sql($_REQUEST["user_id"], $no_of_records, false);
 }
 
 $event_list_query_result = mysql_query($event_sql);

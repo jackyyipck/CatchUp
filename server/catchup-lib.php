@@ -150,6 +150,7 @@ function create_or_update_event_detail($db_conn,
 							$arr_option_name, 
 							$arr_option_desc, 
 							$arr_invitee_id,
+							$allow_vote,
 							$event_profile_filename,
 							$event_profile_pic_object
 							)
@@ -179,7 +180,7 @@ function create_or_update_event_detail($db_conn,
 		// If no file object, attempt to get filename
 		$target_filename = $event_profile_filename;
 	}
-	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $end_at, $expire_at, $create_by, $is_allday, $is_public, $target_filename), $db_conn))
+	if (mysql_query(create_or_update_event_sql($event_id, $event_name, $event_desc, $create_at, $updated_at, $start_at, $end_at, $expire_at, $create_by, $is_allday, $is_public, $allow_vote, $target_filename), $db_conn))
 	{
 		if($event_id=='')
 		{
@@ -551,7 +552,7 @@ function push_msg($db_conn, $user_id, $msg, $event_id)
 		$tContext = stream_context_create ();
 		stream_context_set_option ($tContext, 'ssl', 'local_cert', 'CatchUpCertificateKey.pem');
 		stream_context_set_option ($tContext, 'ssl', 'passphrase', 'Lov627er');
-		$tSocket = stream_socket_client ('	', $error, $errstr, 30, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $tContext);
+		$tSocket = stream_socket_client ('ssl://gateway.sandbox.push.apple.com:2195', $error, $errstr, 30, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $tContext);
 		if (!$tSocket)
 			write_log(3, "APNS Connection Failed: $error $errstr" . PHP_EOL);
 		$tMsg = chr (0) . chr (0) . chr (32) . pack ('H*', $tToken) . pack ('n', strlen ($tBody)) . $tBody;
@@ -588,15 +589,33 @@ function update_badge_count($db_conn, $badge_count, $user_id)
 function remind_user($db_conn, $user_id, $event_id)
 {
 	//Notification
-	$event_query_result = mysql_query(get_event_sql($user_id, false));
+	$event_query_result = mysql_query(get_event_by_event_id_sql($event_id));
 	$event_query_row = mysql_fetch_assoc($event_query_result);
 	push_msg($db_conn, $user_id, 
-						get_user_name($db_conn, $user_id)." @ ".$event_query_row["event_name"].": Please respond!", $event_query_row["event_id"]);
+						get_user_name($db_conn, $user_id)." @ ".$event_query_row["event_name"].": Please respond to this event.", $event_query_row["event_id"]);
 	mysql_free_result($event_query_result);
 }
 function trigger_vote($db_conn, $event_id, $vote_status)
 {
 	return mysql_query(trigger_vote_sql($event_id, $vote_status), $db_conn);
+}
+function get_server_status($site, $port)
+{
+	$status = array("OFFLINE", "ONLINE");
+	$fp = @fsockopen($site, $port, $errno, $errstr, 2);
+
+	if (!$fp) 
+	{
+		return $status[0];
+	}
+	else
+	{
+		return $status[1];
+	}
+}
+function create_feedback($db_conn, $user_id, $feedback)
+{
+	return mysql_query(create_feedback_sql($user_id, $feedback), $db_conn);
 }
 function upload_media(	$db_conn, 
 						$event_id, 
