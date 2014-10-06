@@ -2,19 +2,19 @@
 include 'catchup-sql.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
 define("ENABLE_SECURITY_CHECK", false);
-define("ENABLE_PUSH_NOTIFICATION", false);
+define("ENABLE_PUSH_NOTIFICATION", true);
 
 function init_db()
 {
-	if ($_SERVER["HTTP_HOST"] == "www.seayu.hk")
+	if ($_SERVER["HTTP_HOST"] == "www.tachyon-ideas.com")
 	{
-		$_SESSION["db_conn"] = mysql_connect('localhost', 'seayu_catchup', 'anios');
+		$_SESSION["db_conn"] = mysql_connect('localhost', 'tachyoni_catchup', 'NGltn8tjHeLQx05');
 	}
 	else
 	{
 		$_SESSION["db_conn"] = mysql_connect('localhost', 'root', '');
 	}
-	mysql_select_db('seayu_catchup');
+	mysql_select_db('tachyoni_catchup');
 	mysql_set_charset('utf8');
 	
 	if(ENABLE_SECURITY_CHECK)
@@ -591,7 +591,7 @@ function remind_user($db_conn, $user_id, $event_id)
 	$event_query_result = mysql_query(get_event_by_event_id_sql($event_id));
 	$event_query_row = mysql_fetch_assoc($event_query_result);
 	push_msg($db_conn, $user_id, 
-						get_user_name($db_conn, $user_id)." @ ".$event_query_row["event_name"].": Please respond to this event.", $event_query_row["event_id"]);
+						@"You are reminded by \"".get_user_name($db_conn, $user_id)."\" to respond to the event \"".$event_query_row["event_name"]."\"", $event_query_row["event_id"]);
 	mysql_free_result($event_query_result);
 }
 function trigger_vote($db_conn, $event_id, $vote_status)
