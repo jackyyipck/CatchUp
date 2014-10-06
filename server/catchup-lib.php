@@ -157,9 +157,8 @@ function create_or_update_event_detail($db_conn,
 {
 	
 	$target_filename = "";
-	if (!empty($event_profile_pic_object["tmp_name"]) && is_uploaded_file($event_profile_pic_object["tmp_name"]))
+	if (!empty($event_profile_pic_object["tmp_name"]))
 	{
-		echo "isset!";
 		switch ($_FILES['event_profile_pic']['error']) 
 		{
 			case UPLOAD_ERR_OK:
@@ -622,38 +621,38 @@ function upload_media(	$db_conn,
 						$create_by, 
 						$updated_at,
 						$media_type,
-						$media_object						
+						$media_filename,
+						$media_tmp_filename,
+						$media_err
 						)
 {
-	
 	$target_filename = "";
-	if (!empty($media_object["tmp_name"]) && is_uploaded_file($media_object["tmp_name"]))
+	switch ($media_err) 
 	{
-		switch ($media_object['error']) 
-		{
-			case UPLOAD_ERR_OK:
-				break;
-			case UPLOAD_ERR_NO_FILE:
-				throw new RuntimeException('No file sent.');
-			case UPLOAD_ERR_INI_SIZE:
-			case UPLOAD_ERR_FORM_SIZE:
-				throw new RuntimeException('Exceeded filesize limit.');
-			default:
-				throw new RuntimeException('Unknown errors.');
-		}	
-		$target_filename = "media/event_".time().$media_object["name"];
-		move_uploaded_file($media_object["tmp_name"], $target_filename);
-
-		if ($media_type == "event-profile-pic")
-		{
-			$sql = update_profile_pic_sql($event_id, $target_filename);
-			echo $sql;
-			mysql_query($sql);
-		}
-		elseif ($media_type == "event-comment")
-		{
-			create_comment_detail($db_conn, "media://".$target_filename, $create_by, $updated_at, $event_id);
-		}	
+		case UPLOAD_ERR_OK:
+			break;
+		case UPLOAD_ERR_NO_FILE:
+			throw new RuntimeException('No file sent.');
+		case UPLOAD_ERR_INI_SIZE:
+		case UPLOAD_ERR_FORM_SIZE:
+			throw new RuntimeException('Exceeded filesize limit.');
+		default:
+			throw new RuntimeException('Unknown errors.');
 	}	
+	$target_filename = "media/event_".time().$media_filename;
+	move_uploaded_file($media_tmp_filename, $target_filename);
+
+	if ($media_type == "event-profile-pic")
+	{
+		$sql = update_profile_pic_sql($event_id, $target_filename);
+		mysql_query($sql);
+	}
+	elseif ($media_type == "event-media")
+	{
+		$sql = add_event_media_sql($event_id, $create_by, $target_filename);
+		echo $sql;
+		mysql_query($sql);
+	}	
+	
 }
 ?>

@@ -558,6 +558,25 @@ function update_profile_pic_sql($event_id, $target_filename)
 			WHERE event_id ='".$event_id."'";
 	return $sql;		
 }
+function add_event_media_sql($event_id, $create_by, $target_filename)
+{
+	$sql = "INSERT INTO tbl_event_media 
+			(event_id, user_id, media_filename)
+			VALUES
+			(
+				'".$event_id."',
+				'".$create_by."',
+				'".$target_filename."'
+			)";
+	return $sql;		
+}
+function get_media_by_event_id_sql($p_event_id)
+{
+	$sql = "SELECT media_id, user_id, create_at, media_filename 
+			FROM tbl_event_media
+			WHERE event_id = '".$p_event_id."'";
+	return $sql;
+}
 function get_all_event_sql($p_user_id)
 {
 	$sql = "SELECT tbl_event.event_id, event_name, event_desc, event_create_at, event_updated_at, event_start_at, event_end_at, event_expire_at, event_create_by, is_allday, event_profile_filename, is_public, allow_vote

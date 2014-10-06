@@ -11,7 +11,7 @@ init_db();
 		<td>
 			<select name="media_type">
 			  <option value="event-profile-pic" selected>event-profile-pic</option>
-			  <option value="event-comment">event-comment</option>
+			  <option value="event-media">event-media</option>
 			</select>
 		</td>
 	</tr>
@@ -29,7 +29,15 @@ init_db();
 	</tr>
 	<tr>
 		<td>Media:</td>
-		<td><input type="file" name="media_file" id="media_file" /></td>
+		<td><input type="file" name="media_file[]" /></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><input type="file" name="media_file[]" /></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><input type="file" name="media_file[]" /></td>
 	</tr>
 	<tr>
 		<td><input type="submit" value="Submit"></td>
