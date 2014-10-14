@@ -1,5 +1,6 @@
 <?php 
 include 'catchup-sql.php';
+include 'image-resize-lib.php';
 date_default_timezone_set("Asia/Hong_Kong"); 
 define("ENABLE_SECURITY_CHECK", false);
 define("ENABLE_PUSH_NOTIFICATION", true);
@@ -645,6 +646,17 @@ function upload_media(	$db_conn,
 
 	if ($media_type == "event-profile-pic")
 	{
+		$thumbnail_filename = substr($target_filename,0,strlen($target_filename)-4)."_tn".substr($target_filename,strlen($target_filename)-4,4);
+		smart_resize_image($target_filename,
+                              $string             = null,
+                              $width              = 100,
+                              $height             = 0,
+                              $proportional       = true,
+                              $output             = $thumbnail_filename,
+                              $delete_original    = false,
+                              $use_linux_commands = false,
+                              $quality = 100
+         );
 		$sql = update_profile_pic_sql($event_id, $target_filename);
 		mysql_query($sql);
 	}
