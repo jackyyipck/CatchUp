@@ -643,20 +643,20 @@ function upload_media(	$db_conn,
 	}	
 	$target_filename = "media/event_".time().$media_filename;
 	move_uploaded_file($media_tmp_filename, $target_filename);
+	$thumbnail_filename = substr($target_filename,0,strlen($target_filename)-4)."_tn".substr($target_filename,strlen($target_filename)-4,4);
+	smart_resize_image($target_filename,
+						  $string             = null,
+						  $width              = 100,
+						  $height             = 0,
+						  $proportional       = true,
+						  $output             = $thumbnail_filename,
+						  $delete_original    = false,
+						  $use_linux_commands = false,
+						  $quality = 100
+	 );
 
 	if ($media_type == "event-profile-pic")
 	{
-		$thumbnail_filename = substr($target_filename,0,strlen($target_filename)-4)."_tn".substr($target_filename,strlen($target_filename)-4,4);
-		smart_resize_image($target_filename,
-                              $string             = null,
-                              $width              = 100,
-                              $height             = 0,
-                              $proportional       = true,
-                              $output             = $thumbnail_filename,
-                              $delete_original    = false,
-                              $use_linux_commands = false,
-                              $quality = 100
-         );
 		$sql = update_profile_pic_sql($event_id, $target_filename);
 		mysql_query($sql);
 	}
