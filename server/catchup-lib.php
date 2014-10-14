@@ -157,8 +157,9 @@ function create_or_update_event_detail($db_conn,
 {
 	
 	$target_filename = "";
-	if (!empty($event_profile_pic_object["tmp_name"]))
+	if (!empty($event_profile_pic_object["tmp_name"]) && is_uploaded_file($event_profile_pic_object["tmp_name"]))
 	{
+		echo "isset!";
 		switch ($_FILES['event_profile_pic']['error']) 
 		{
 			case UPLOAD_ERR_OK:
