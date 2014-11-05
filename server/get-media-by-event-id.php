@@ -16,6 +16,7 @@ while($media_query_row = mysql_fetch_assoc($media_query_result))
 	$media_node->addAttribute('user_id',$media_query_row['user_id']);
 	$media_node->addAttribute('create_at',$media_query_row['create_at']);
 	$media_node->addAttribute('media_filename',$media_query_row['media_filename']);
+	$media_node->addAttribute('media_thumbnail',substr($media_query_row['media_filename'],0,6)."tn_".substr($media_query_row['media_filename'],6,strlen($media_query_row['media_filename'])-6));
 }
 
 mysql_free_result($media_query_result);
